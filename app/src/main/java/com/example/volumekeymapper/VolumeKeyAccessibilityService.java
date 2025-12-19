@@ -38,11 +38,18 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
     private static final long DRAG_TIMEOUT_MS = 3000L;
     private static final float MIN_DRAG_DISTANCE_PX = 5f;
 
+    private static final long TAP_DURATION_MS = 10L;
+    private static final long MACRO_STEP_DELAY_MS = 10L;
+    private static final long MACRO_HOLD_AT_END_MS = 500L;
+    private static final long MACRO_TIMEOUT_MS = 5000L;
+
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private WindowManager overlayWindowManager;
     private RecordingOverlayView overlayView;
     private WindowManager.LayoutParams overlayParams;
+
+    private MacroState macroState;
 
     private boolean recordingActive = false;
     private float startX;
@@ -99,6 +106,7 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         if (enabled) {
             startRecordingOverlay();
         } else {
+            cancelMacroIfRunning("disabled");
             removeOverlay();
             recordingActive = false;
         }
@@ -261,12 +269,24 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
             failThisRound("api_too_low");
             return;
         }
-        Log.d(TAG, "Run macro (drag only after delay): drag " + dragStart + " -> " + dragEnd + ", delay=" + DELAY_BEFORE_DRAG_MS + "ms");
-        handler.postDelayed(() -> {
-            dispatchDrag(dragStart, dragEnd, new GestureCallbackAdapter(this::finishRound));
-            // Fallback：若回调未触发，在拖动时长后再补一次结束
-            handler.postDelayed(this::finishRound, DRAG_DURATION_MS + 200);
-        }, DELAY_BEFORE_DRAG_MS);
+        cancelMacroIfRunning("restart");
+        MacroState state = new MacroState(buttonCenter, dragStart, dragEnd);
+        macroState = state;
+        state.timeoutRunnable = () -> abortMacro("timeout");
+        handler.postDelayed(state.timeoutRunnable, MACRO_TIMEOUT_MS);
+
+        Log.d(TAG, "Run macro v2: tap=" + buttonCenter
+                + " -> dragHold " + dragStart + " -> " + dragEnd
+                + " -> back -> hold " + MACRO_HOLD_AT_END_MS + "ms -> up");
+
+        state.afterTapFallback = () -> macroStartDragHoldOnce(state, "tap_fallback");
+        dispatchTap(buttonCenter, new GestureCallbackAdapter(
+                () -> macroStartDragHoldOnce(state, "tap_completed"),
+                () -> {
+                    if (macroState == state) abortMacro("tap_cancelled");
+                }
+        ));
+        handler.postDelayed(state.afterTapFallback, TAP_DURATION_MS + 200);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -278,7 +298,7 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         Path path = new Path();
         path.moveTo(point.x, point.y);
         GestureDescription.StrokeDescription stroke =
-                new GestureDescription.StrokeDescription(path, 0, 10);
+                new GestureDescription.StrokeDescription(path, 0, TAP_DURATION_MS);
         GestureDescription gesture = new GestureDescription.Builder()
                 .addStroke(stroke)
                 .build();
@@ -314,15 +334,180 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
     }
 
     private void finishRound() {
-        Log.d(TAG, "Macro finished (drag only)");
+        cancelMacroIfRunning("finished");
+        Log.d(TAG, "Macro finished");
         setFunctionEnabled(false);
+    }
+
+    private void abortMacro(String reason) {
+        Log.w(TAG, "Macro aborted: " + reason);
+        cancelMacroIfRunning(reason);
+        setFunctionEnabled(false);
+    }
+
+    private void cancelMacroIfRunning(String reason) {
+        MacroState state = macroState;
+        if (state == null) return;
+        Log.d(TAG, "Cancel macro: " + reason);
+        if (state.timeoutRunnable != null) handler.removeCallbacks(state.timeoutRunnable);
+        if (state.afterTapFallback != null) handler.removeCallbacks(state.afterTapFallback);
+        if (state.afterDragFallback != null) handler.removeCallbacks(state.afterDragFallback);
+        if (state.finishFallback != null) handler.removeCallbacks(state.finishFallback);
+        macroState = null;
+    }
+
+    private void macroStartDragHoldOnce(MacroState state, String trigger) {
+        if (macroState != state || state.dragStarted) return;
+        state.dragStarted = true;
+        if (state.afterTapFallback != null) handler.removeCallbacks(state.afterTapFallback);
+
+        handler.postDelayed(() -> macroDispatchDragHold(state, trigger), MACRO_STEP_DELAY_MS);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private void macroDispatchDragHold(MacroState state, String trigger) {
+        if (macroState != state) return;
+
+        // API 24/25 上不保证支持“继续笔画”；此处提供降级：普通拖动（会松手）→ 返回 → 结束。
+        GestureDescription.StrokeDescription dragHoldStroke = createDragStroke(state.dragStart, state.dragEnd, true);
+        if (dragHoldStroke == null) {
+            Log.w(TAG, "Continuous stroke unsupported, fallback to normal drag. trigger=" + trigger);
+            dispatchDrag(state.dragStart, state.dragEnd, new GestureCallbackAdapter(
+                    () -> handler.postDelayed(() -> {
+                        if (macroState != state) return;
+                        boolean backOk = performGlobalAction(GLOBAL_ACTION_BACK);
+                        Log.d(TAG, "performGlobalAction(BACK) ok=" + backOk + " (fallback)");
+                        finishRound();
+                    }, MACRO_STEP_DELAY_MS),
+                    () -> {
+                        if (macroState == state) abortMacro("drag_fallback_cancelled");
+                    }
+            ));
+            state.finishFallback = () -> {
+                if (macroState == state) finishRound();
+            };
+            handler.postDelayed(state.finishFallback, DRAG_DURATION_MS + 500);
+            return;
+        }
+
+        state.heldStroke = dragHoldStroke;
+        GestureDescription gesture = new GestureDescription.Builder()
+                .addStroke(dragHoldStroke)
+                .build();
+
+        state.afterDragFallback = () -> macroAfterDragHoldOnce(state, "drag_fallback");
+        boolean dispatched = dispatchGesture(gesture, new GestureCallbackAdapter(
+                () -> macroAfterDragHoldOnce(state, "drag_completed"),
+                () -> {
+                    if (macroState == state) abortMacro("drag_hold_cancelled");
+                }
+        ), null);
+        Log.d(TAG, "dispatchDragHold dispatched=" + dispatched + " trigger=" + trigger);
+        if (!dispatched) {
+            abortMacro("gesture_dispatch_failed_drag_hold");
+            return;
+        }
+        handler.postDelayed(state.afterDragFallback, DRAG_DURATION_MS + 200);
+    }
+
+    private void macroAfterDragHoldOnce(MacroState state, String trigger) {
+        if (macroState != state || state.afterDragInvoked) return;
+        state.afterDragInvoked = true;
+        if (state.afterDragFallback != null) handler.removeCallbacks(state.afterDragFallback);
+
+        handler.postDelayed(() -> {
+            if (macroState != state) return;
+            boolean backOk = performGlobalAction(GLOBAL_ACTION_BACK);
+            Log.d(TAG, "performGlobalAction(BACK) ok=" + backOk + " trigger=" + trigger);
+            macroDispatchHoldAndRelease(state);
+        }, MACRO_STEP_DELAY_MS);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private void macroDispatchHoldAndRelease(MacroState state) {
+        if (macroState != state) return;
+        if (state.heldStroke == null) {
+            abortMacro("missing_held_stroke");
+            return;
+        }
+
+        GestureDescription.StrokeDescription endHoldAndUp = continueStrokeAtEnd(state.heldStroke, state.dragEnd, MACRO_HOLD_AT_END_MS);
+        if (endHoldAndUp == null) {
+            Log.w(TAG, "continueStroke unavailable; cannot guarantee hold+release. Ending macro.");
+            finishRound();
+            return;
+        }
+
+        GestureDescription gesture = new GestureDescription.Builder()
+                .addStroke(endHoldAndUp)
+                .build();
+
+        state.finishFallback = () -> {
+            if (macroState == state) finishRound();
+        };
+        boolean dispatched = dispatchGesture(gesture, new GestureCallbackAdapter(
+                () -> {
+                    if (macroState == state) finishRound();
+                },
+                () -> {
+                    if (macroState == state) abortMacro("hold_release_cancelled");
+                }
+        ), null);
+        Log.d(TAG, "dispatchHoldAndRelease dispatched=" + dispatched);
+        if (!dispatched) {
+            abortMacro("gesture_dispatch_failed_hold_release");
+            return;
+        }
+        handler.postDelayed(state.finishFallback, MACRO_HOLD_AT_END_MS + 500);
+    }
+
+    private GestureDescription.StrokeDescription createDragStroke(PointF start, PointF end, boolean willContinue) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return null;
+        Path path = new Path();
+        path.moveTo(start.x, start.y);
+        path.lineTo(end.x, end.y);
+
+        if (willContinue) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return null;
+            try {
+                return new GestureDescription.StrokeDescription(path, 0, DRAG_DURATION_MS, true);
+            } catch (NoSuchMethodError e) {
+                Log.w(TAG, "StrokeDescription(willContinue) unsupported: " + e);
+                return null;
+            }
+        }
+
+        return new GestureDescription.StrokeDescription(path, 0, DRAG_DURATION_MS);
+    }
+
+    private GestureDescription.StrokeDescription continueStrokeAtEnd(
+            GestureDescription.StrokeDescription previousStroke,
+            PointF end,
+            long holdDurationMs
+    ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return null;
+        try {
+            Path path = new Path();
+            path.moveTo(end.x, end.y);
+            path.lineTo(end.x, end.y);
+            return previousStroke.continueStroke(path, 0, holdDurationMs, false);
+        } catch (NoSuchMethodError e) {
+            Log.w(TAG, "continueStroke unsupported: " + e);
+            return null;
+        }
     }
 
     private static class GestureCallbackAdapter extends GestureResultCallback {
         private final Runnable onCompleted;
+        private final Runnable onCancelled;
 
         GestureCallbackAdapter(Runnable onCompleted) {
+            this(onCompleted, null);
+        }
+
+        GestureCallbackAdapter(Runnable onCompleted, Runnable onCancelled) {
             this.onCompleted = onCompleted;
+            this.onCancelled = onCancelled;
         }
 
         @Override
@@ -336,7 +521,32 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         @Override
         public void onCancelled(GestureDescription gestureDescription) {
             Log.w(TAG, "Gesture cancelled: " + gestureDescription);
+            if (onCancelled != null) {
+                onCancelled.run();
+                return;
+            }
             setFunctionEnabled(false);
+        }
+    }
+
+    private static class MacroState {
+        final PointF buttonCenter;
+        final PointF dragStart;
+        final PointF dragEnd;
+
+        boolean dragStarted = false;
+        boolean afterDragInvoked = false;
+        GestureDescription.StrokeDescription heldStroke;
+
+        Runnable timeoutRunnable;
+        Runnable afterTapFallback;
+        Runnable afterDragFallback;
+        Runnable finishFallback;
+
+        MacroState(PointF buttonCenter, PointF dragStart, PointF dragEnd) {
+            this.buttonCenter = buttonCenter;
+            this.dragStart = dragStart;
+            this.dragEnd = dragEnd;
         }
     }
 

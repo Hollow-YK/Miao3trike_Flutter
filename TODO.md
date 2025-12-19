@@ -47,6 +47,7 @@ TODO 列表（Miao3trike 宏录制改造）
 
 12) 宏流程 v2：拖动不松手 + 返回 + 悬停后松手
     - ✅ 方案拆解与可行性验证：点击按钮中心 → 10ms → 拖动（起点→终点但不松手）→ 10ms → `GLOBAL_ACTION_BACK` → 终点悬停 500ms → 松手（已补充设计草案：`MACRO_V2_PLAN.md`）
+    - ✅ 代码落地：按 v2 序列实现手势链路（API 版本差异下提供降级路径；待实机验证 `continueStroke` 与 BACK 插入是否被系统取消）
     - ☐ 技术验证：`dispatchGesture` 继续笔画（`StrokeDescription` 的 `willContinue` / `continueStroke`）能否在目标机型上稳定“按住不松手”
     - ☐ 技术验证：在“按住不松手”期间执行 `performGlobalAction(GLOBAL_ACTION_BACK)` 是否会导致手势被系统取消（从而等效松手）
     - ☐ 设计回退策略：任一步失败/取消时如何清理状态（overlay/开关/回调）并提示用户重试
