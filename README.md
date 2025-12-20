@@ -23,7 +23,7 @@
 
 ## 📖 简介 (Introduction)
 
-**Miao3trikeMod** 是一个基于 **Miao3trike** 的 Android 应用。
+**Miao3trikeMod** 是一个基于 [**Miao3trike**](https://github.com/ESHIWU/Miao3trike) 的 Android 应用。
 因为明日方舟的返回键暂停键有CD而游戏内的触摸暂停键没有CD，本魔改使用更激进的无障碍模拟宏操作，替代人工划火柴、零帧撤退与放技能、逐帧步进。并且提供操作间延迟调整选项，极限可以于1ms内稳定划出火柴。
 **可与原版同时存在！**
 
