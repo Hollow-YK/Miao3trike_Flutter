@@ -19,11 +19,11 @@ public final class MacroConfig {
     public static final String KEY_STEP_MACRO_ENABLED = "macro_step_enabled";
 
     public static final long DEFAULT_STARTUP_DELAY_MS = 30L;
-    public static final long DEFAULT_STEP_DELAY_MS = 10L;
-    public static final long DEFAULT_DRAG_DURATION_MS = 400L;
-    public static final long DEFAULT_HOLD_DELAY_MS = 500L;
+    public static final long DEFAULT_STEP_DELAY_MS = 0L;
+    public static final long DEFAULT_DRAG_DURATION_MS = 50L;
+    public static final long DEFAULT_HOLD_DELAY_MS = 200L;
     public static final boolean DEFAULT_CLICK_CAPTURE_ENABLED = true;
-    public static final long DEFAULT_STEP_MACRO_DELAY_MS = 200L;
+    public static final long DEFAULT_STEP_MACRO_DELAY_MS = 50L;
     public static final boolean DEFAULT_STEP_MACRO_ENABLED = true;
 
     public static final long MIN_STARTUP_DELAY_MS = 0L;
