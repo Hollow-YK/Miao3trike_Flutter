@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startService(serviceIntent);
         }
+        VolumeKeyAccessibilityService.setMasterEnabled(true);
         Toast.makeText(this, "已启动悬浮窗服务", Toast.LENGTH_SHORT).show();
 
         updateCheckIcons();
@@ -258,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
     private void stopServiceLogic() {
         stopService(new Intent(this, FloatingWindowService.class));
         FloatingWindowService.stopService(this);
+        VolumeKeyAccessibilityService.setMasterEnabled(false);
         Toast.makeText(this, "已停止悬浮窗服务", Toast.LENGTH_SHORT).show();
     }
 

@@ -49,6 +49,7 @@ public class FloatingWindowService extends Service {
         super.onCreate();
         instance = this;
         isRunning = true;
+        VolumeKeyAccessibilityService.setMasterEnabled(true);
 
         createNotificationChannelIfNeeded();
         startForeground(1, buildForegroundNotification());
@@ -85,6 +86,7 @@ public class FloatingWindowService extends Service {
         if (instance == this) {
             instance = null;
         }
+        VolumeKeyAccessibilityService.setMasterEnabled(false);
     }
 
     private void createNotificationChannelIfNeeded() {

@@ -28,6 +28,7 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
     private static final String TAG = "VolumeKeyService";
     private static VolumeKeyAccessibilityService instance;
     private static boolean functionEnabled = false;
+    private static boolean masterEnabled = false;
 
     private static final String PREF_KEY_BUTTON_CENTER_CUSTOMIZED = "button_center_customized";
     private static final String PREF_KEY_BUTTON_CENTER_X = "button_center_x";
@@ -108,6 +109,9 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         if (event == null) return false;
+        if (!masterEnabled) {
+            return false;
+        }
         if (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP
                 && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (macroState != null) {
@@ -151,6 +155,11 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
     * 开关由浮窗控制；开启时进入录制待机，关闭时清理。
     */
     public static void setFunctionEnabled(boolean enabled) {
+        if (enabled && !masterEnabled) {
+            Log.d(TAG, "Ignore function enable while master disabled");
+            FloatingWindowService.notifyFunctionState(false);
+            return;
+        }
         functionEnabled = enabled;
         VolumeKeyAccessibilityService svc = instance;
         if (svc != null) {
@@ -161,6 +170,19 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
 
     public static boolean isFunctionEnabled() {
         return functionEnabled;
+    }
+
+    public static void setMasterEnabled(boolean enabled) {
+        masterEnabled = enabled;
+        VolumeKeyAccessibilityService svc = instance;
+        if (!enabled && svc != null) {
+            svc.abortStepMacro("master_disabled");
+            setFunctionEnabled(false);
+        }
+    }
+
+    public static boolean isMasterEnabled() {
+        return masterEnabled;
     }
 
     public static VolumeKeyAccessibilityService getInstance() {

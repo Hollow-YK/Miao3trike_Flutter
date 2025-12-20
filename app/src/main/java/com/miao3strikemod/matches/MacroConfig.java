@@ -32,7 +32,7 @@ public final class MacroConfig {
     public static final long MIN_STEP_DELAY_MS = 0L;
     public static final long MAX_STEP_DELAY_MS = 1000L;
 
-    public static final long MIN_DRAG_DURATION_MS = 50L;
+    public static final long MIN_DRAG_DURATION_MS = 0L;
     public static final long MAX_DRAG_DURATION_MS = 5000L;
 
     public static final long MIN_HOLD_DELAY_MS = 0L;
