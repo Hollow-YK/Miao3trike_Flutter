@@ -38,7 +38,7 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
     private static final float BUTTON_CENTER_RY = 0.0745f;
 
     private static final long GESTURE_DELAY_MS = 10L;
-    private static final long DELAY_BEFORE_DRAG_MS = 1000L; // 避免手势落在 overlay 上
+    private static final long DELAY_AFTER_OVERLAY_DEACTIVATION_MS = 30L; // 等待 overlay 更新为不可触摸/隐藏后再开始宏
     private static final long DRAG_DURATION_MS = 400L;      // 拖动时长，避免被系统忽略
     private static final long DRAG_TIMEOUT_MS = 3000L;
     private static final float MIN_DRAG_DISTANCE_PX = 5f;
@@ -294,7 +294,6 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
 
     private void completeRecording(float endX, float endY) {
         recordingActive = false;
-        removeOverlay();
         showArrow = false;
         if (overlayView != null) overlayView.invalidate();
 
@@ -302,6 +301,7 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         PointF end = new PointF(endX, endY);
         PointF buttonCenter = computeButtonCenter();
 
+        deactivateOverlayForMacro();
         runMacroSequence(buttonCenter, start, end);
     }
 
@@ -362,6 +362,23 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         }
     }
 
+    private void deactivateOverlayForMacro() {
+        if (overlayWindowManager == null || overlayView == null || overlayParams == null) return;
+        try {
+            overlayView.setAlpha(0f);
+            overlayView.setVisibility(View.INVISIBLE);
+        } catch (Exception e) {
+            Log.w(TAG, "deactivateOverlayForMacro: view hide failed", e);
+        }
+        try {
+            overlayParams.flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+            overlayWindowManager.updateViewLayout(overlayView, overlayParams);
+            Log.d(TAG, "Overlay deactivated for macro (invisible + not touchable)");
+        } catch (Exception e) {
+            Log.w(TAG, "deactivateOverlayForMacro: updateViewLayout failed", e);
+        }
+    }
+
     private boolean isTouchNearButtonCenter(float rawX, float rawY) {
         float dx = rawX - buttonCenterX;
         float dy = rawY - buttonCenterY;
@@ -389,18 +406,22 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         state.timeoutRunnable = () -> abortMacro("timeout");
         handler.postDelayed(state.timeoutRunnable, MACRO_TIMEOUT_MS);
 
-        Log.d(TAG, "Run macro v2: tap=" + buttonCenter
+        Log.d(TAG, "Run macro v2: startDelay=" + DELAY_AFTER_OVERLAY_DEACTIVATION_MS + "ms, tap=" + buttonCenter
                 + " -> dragHold " + dragStart + " -> " + dragEnd
                 + " -> back -> hold " + MACRO_HOLD_AT_END_MS + "ms -> up");
 
-        state.afterTapFallback = () -> macroStartDragHoldOnce(state, "tap_fallback");
-        dispatchTap(buttonCenter, new GestureCallbackAdapter(
-                () -> macroStartDragHoldOnce(state, "tap_completed"),
-                () -> {
-                    if (macroState == state) abortMacro("tap_cancelled");
-                }
-        ));
-        handler.postDelayed(state.afterTapFallback, TAP_DURATION_MS + 200);
+        state.startRunnable = () -> {
+            if (macroState != state) return;
+            state.afterTapFallback = () -> macroStartDragHoldOnce(state, "tap_fallback");
+            dispatchTap(buttonCenter, new GestureCallbackAdapter(
+                    () -> macroStartDragHoldOnce(state, "tap_completed"),
+                    () -> {
+                        if (macroState == state) abortMacro("tap_cancelled");
+                    }
+            ));
+            handler.postDelayed(state.afterTapFallback, TAP_DURATION_MS + 200);
+        };
+        handler.postDelayed(state.startRunnable, DELAY_AFTER_OVERLAY_DEACTIVATION_MS);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -464,6 +485,7 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         if (state == null) return;
         Log.d(TAG, "Cancel macro: " + reason);
         if (state.timeoutRunnable != null) handler.removeCallbacks(state.timeoutRunnable);
+        if (state.startRunnable != null) handler.removeCallbacks(state.startRunnable);
         if (state.afterTapFallback != null) handler.removeCallbacks(state.afterTapFallback);
         if (state.afterDragFallback != null) handler.removeCallbacks(state.afterDragFallback);
         if (state.finishFallback != null) handler.removeCallbacks(state.finishFallback);
@@ -653,6 +675,7 @@ public class VolumeKeyAccessibilityService extends AccessibilityService {
         GestureDescription.StrokeDescription heldStroke;
 
         Runnable timeoutRunnable;
+        Runnable startRunnable;
         Runnable afterTapFallback;
         Runnable afterDragFallback;
         Runnable finishFallback;
