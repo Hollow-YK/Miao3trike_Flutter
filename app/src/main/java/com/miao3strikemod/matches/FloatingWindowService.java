@@ -1,4 +1,4 @@
-package com.ark3trike.matches;
+package com.miao3strikemod.matches;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -25,8 +25,8 @@ import androidx.core.app.NotificationCompat;
 
 public class FloatingWindowService extends Service {
 
-    private static final String TAG = "Miao3trikeFloat";
-    private static final String CHANNEL_ID = "miao3trike_foreground";
+    private static final String TAG = "Miao3trikeModFloat";
+    private static final String CHANNEL_ID = "Miao3trikeMod_foreground";
     private static final int CAPTURE_COLOR = 0xFFFF9800;
 
     private WindowManager windowManager;
@@ -92,10 +92,10 @@ public class FloatingWindowService extends Service {
             NotificationChannel channel =
                     new NotificationChannel(
                             CHANNEL_ID,
-                            "Miao3trike 前台服务",
+                            "Miao3trikeMod 前台服务",
                             NotificationManager.IMPORTANCE_MIN
                     );
-            channel.setDescription("保持 Miao3trike 功能运行");
+            channel.setDescription("保持 Miao3trikeMod 功能运行");
             channel.setShowBadge(false);
             channel.setSound(null, null);
 
@@ -110,7 +110,7 @@ public class FloatingWindowService extends Service {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
-                        .setContentTitle("Miao3trike 正在运行")
+                        .setContentTitle("Miao3trikeMod 正在运行")
                         .setContentText("点击进入应用可调整设置")
                         .setOngoing(true)
                         .setPriority(NotificationCompat.PRIORITY_MIN);

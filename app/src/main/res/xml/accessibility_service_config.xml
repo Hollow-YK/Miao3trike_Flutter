@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/accessibility_service_description"
     android:packageNames="@null"
@@ -9,4 +9,4 @@
     android:canRetrieveWindowContent="true"
     android:canRequestFilterKeyEvents="true"
     android:canPerformGestures="true"
-    android:settingsActivity="com.ark3trike.matches.MainActivity" />
+    android:settingsActivity="com.miao3strikemod.matches.MainActivity" />

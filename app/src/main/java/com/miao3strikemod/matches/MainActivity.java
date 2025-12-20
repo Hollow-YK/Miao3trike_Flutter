@@ -1,4 +1,4 @@
-package com.ark3trike.matches;
+package com.miao3strikemod.matches;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.ActivityManager;
@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private View settingsButton;
     private SwitchCompat toggleServiceSwitch;
     private TextView tvAuthor;
+    private TextView tvModAuthor;
     private ImageView imgCharacter;
 
     private ImageView checkAccessibility;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         settingsButton = findViewById(R.id.btn_settings_container);
         toggleServiceSwitch = findViewById(R.id.btn_toggle_service);
         tvAuthor = findViewById(R.id.tv_author);
+        tvModAuthor = findViewById(R.id.tv_modauthor);
         imgCharacter = findViewById(R.id.img_character);
 
         checkAccessibility = findViewById(R.id.icon_check_accessibility);
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
                 startActivity(intent);
-                Toast.makeText(this, "请在列表中开启 Miao3trike", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "请在列表中开启 Miao3trikeMod", Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 Toast.makeText(this, "无法打开无障碍设置", Toast.LENGTH_SHORT).show();
             }
@@ -118,6 +120,16 @@ public class MainActivity extends AppCompatActivity {
         tvAuthor.setOnClickListener(v -> {
             try {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://space.bilibili.com/506666307"));
+                startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(this, "无法打开链接", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // 魔改者链接点击
+        tvModAuthor.setOnClickListener(v -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://space.bilibili.com/8613786"));
                 startActivity(intent);
             } catch (Exception e) {
                 Toast.makeText(this, "无法打开链接", Toast.LENGTH_SHORT).show();

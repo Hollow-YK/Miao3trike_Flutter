@@ -1,4 +1,4 @@
-package com.ark3trike.matches;
+package com.miao3strikemod.matches;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;

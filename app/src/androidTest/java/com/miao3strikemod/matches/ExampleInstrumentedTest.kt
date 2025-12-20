@@ -1,4 +1,4 @@
-package com.example.volumekeymapper
+﻿package com.miao3strikemod.matches
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.volumekeymapper", appContext.packageName)
+        assertEquals("com.miao3strikemod.matches", appContext.packageName)
     }
 }

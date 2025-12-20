@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.ark3trike.matches'
+    namespace 'com.miao3strikemod.matches'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.ark3trike.matches"
+        applicationId "com.miao3strikemod.matches"
         minSdk 21
         targetSdk 34
         versionCode 1
