@@ -4,7 +4,7 @@
   <h1 align="center">Miao3trike</h1>
 
   <p align="center">
-    Miao3trike：一个明日方舟手机版划火柴小工具
+    Miao3trike：一个明日方舟手机版划火柴小工具的魔改版
     <br />
     <a href="https://github.com/SuperMaxine/Miao3trikeMod/issues">报告 Bug</a>
     ·
