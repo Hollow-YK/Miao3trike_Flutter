@@ -94,6 +94,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+
+            const SizedBox(height: 64),
             // 设置标题
             const Text(
               '设置',
@@ -163,6 +165,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: FilledButton.styleFrom(
                         backgroundColor: const Color(0xFF00BCD4),
                         minimumSize: const Size.fromHeight(48),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // 其他设置
+            Card(
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '其他设置',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.restart_alt),
+                      title: const Text('重置所有设置'),
+                      subtitle: const Text('恢复所有设置为默认值'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.restore),
+                        onPressed: () {
+                          _showResetConfirmation(context);
+                        },
                       ),
                     ),
                   ],
@@ -413,40 +449,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // 其他设置
-            Card(
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '其他设置',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading: const Icon(Icons.restart_alt),
-                      title: const Text('重置所有设置'),
-                      subtitle: const Text('恢复所有设置为默认值'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.restore),
-                        onPressed: () {
-                          _showResetConfirmation(context);
-                        },
                       ),
                     ),
                   ],
