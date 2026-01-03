@@ -1,63 +1,51 @@
-# miao3trikeflutter
+﻿# AAR
+
+将原本的[**Miao3trikeMod**](https://github.com/SuperMaxine/Miao3trikeMod)打包成AAR，用来实现核心功能。基本上没改代码。
+
+下面是**Miao3trikeMod**的README
+
+---
 
 <div align="center">
-  <img src="images/icon.png" alt="Logo" width="100" height="100">
+  <img src="app/src/main/res/drawable/ic_cat_head.png" alt="Logo" width="100" height="100">
 
-  <h1 align="center">Miao3trike Flutter</h1>
+  <h1 align="center">Miao3trike</h1>
 
   <p align="center">
-    Miao3trikeFlutter：一个套了 Flutter 写的 Mental Design UI 的明日方舟手机版划火柴小工具的魔改版
+    Miao3trike：一个明日方舟手机版划火柴小工具的魔改版
     <br />
-    <a href="https://github.com/Hollow-YK/Miao3trike_Flutter/issues">报告 Bug</a>
+    <a href="https://github.com/SuperMaxine/Miao3trikeMod/issues">报告 Bug</a>
+    ·
+    <a href="https://github.com/SuperMaxine/Miao3trikeMod/pulls">发起请求</a>
   </p>
 
   <p align="center">
     <img src="https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android" alt="Platform" />
-    <img src="https://img.shields.io/badge/Language-Dart%20%2F%20Kotlin%20%2F%20Java-blue?style=flat-square&logo=dart" alt="Language" />
+    <img src="https://img.shields.io/badge/Language-Kotlin%20%2F%20Java-purple?style=flat-square&logo=kotlin" alt="Language" />
     <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" />
-    <img src="https://img.shields.io/github/stars/Hollow-YK/Miao3trike_Flutter?style=social" alt="Stars" />
+    <img src="https://img.shields.io/github/stars/SuperMaxine/Miao3trikeMod?style=social" alt="Stars" />
   </p>
 </div>
 
 ---
 
-## 下载与安装
+## 📖 简介 (Introduction)
 
-请前往[Release](https://github.com/Hollow-YK/Miao3trike_Flutter/releases)下载最新安装包并安装。
+**Miao3trikeMod** 是一个基于 [**Miao3trike**](https://github.com/ESHIWU/Miao3trike) 的 Android 应用。
+因为明日方舟的返回键暂停键有CD而游戏内的触摸暂停键没有CD，本魔改使用更激进的无障碍模拟宏操作，替代人工划火柴、零帧撤退与放技能、逐帧步进。并且提供操作间延迟调整选项，极限可以于1ms内稳定划出火柴。
+**可与原版同时存在！**
 
-## 简介
+## 🚨 魔改版使用教程（Tutorial）
 
-**Miao3trikeFlutter** 是一个基于 [**Miao3trikeMod**](https://github.com/SuperMaxine/Miao3trikeMod) 的 Android 应用。
+**Miao3trikeMod**相比原版操作复杂度高了很多，在魔改版中，功能使用方法如下：
 
-> [!Tip]
->
-> **可与原版、改版同时存在！**
 
-因为前面的版本都是xml的UI，写了个看起来更丰富 ~~但是似乎没什么用~~ 的UI。
-该版本使用Flutter编写UI部分，并通过AAR将原来的代码打包进来实现功能，所以理论上和原版一样 ~~（Bug应该也一样）~~
-
-在使用该版本过程中发现的Bug请在本repo进行反馈，除非你能确定是来自 [**Miao3trikeMod**](https://github.com/SuperMaxine/Miao3trikeMod) 的代码导致的。
-~~但是由于本人对Android原生开发可以说一窍不通，所以有些Bug可能不会修~~
-
-### 使用教程
-
-**Miao3trikeFlutter** 功能使用方法与 **Miao3trikeMod** 几乎一样，若你使用过 Miao3trikeMod ，可以较快上手。
-
-下面的使用教程是从 **Miao3trikeMod** 那里复制来的。
-
-<details>
 
 - 划火柴：**第一次使用务必校准暂停按钮位置！（点击悬浮开关，将出现的蓝色按钮拖动到游戏中暂停按钮的真实位置，一次设置，永久生效）** 正常使用时，在**游戏暂停**状态下点击**悬浮开关**，开启划火柴操作录制，此时拖动干员并不会真的拖动干员，而是绘制一条拖放路径，松手后，应用会自动播放“点暂停→拖出干员→手机返回键”的宏操作，放置到位后之后需要自行调整干员朝向。
 - 零帧撤退与放技能：在**游戏暂停**状态下按下手机的**音量+**按键，开启干员位置录制，此时点击干员位置，松手后，应用会自动播放“点暂停→点击干员→点暂停”的宏脚本，然后可以自己选择开干员技能或是撤退。
 - 逐帧步进：在**游戏暂停**状态下按下手机的**音量-**按键，应用会自动播放“点暂停→等待→点暂停”的宏脚本，通过调整等待时间（“步进延迟”），可以以人类难以精确捕捉的时间逐帧步进游戏内时间，方便精细操作。
 
-</details>
-
 ### 常见问题
-
-这些也是从 **Miao3trikeMod** 那里复制来的。
-
-<details>
 
 1. 为什么一进去划火柴不成功反而还取消暂停了？
   - 有可能是模拟暂停按钮的位置不对，在划火柴模式下，将蓝色的示意点拖动到游戏中的暂停按钮位置再试试。
@@ -72,43 +60,59 @@
 6. “拖动速度”是什么？
   - 是拖动干员到目标位置所需要的时间，是在游戏时间流动时进行的操作，增加该参数会真正增加划火柴时游戏内过去的时间。参数过小**可能会导致部分手机无法识别拖动操作**，仅在个人测试过的手机上可设置为1ms并保持稳定，0ms可能会导致无障碍错误并使应用闪退。
 
-</details>
+## 📸 界面预览 (Screenshots)
 
-## 开发相关
+| 首页预览 |
+|:---:|
+| <img width="1439" height="3016" alt="20251220" src="https://github.com/user-attachments/assets/bc616806-0846-41ad-81bd-f10ebc267567" /> |
 
-<details>
+- 🎨 **精美 UI**：遵循 Material Design 设计规范。
+- 🔧 **核心功能**：手机快速划火柴。
+- 🌙 **深色模式**：完美支持 Android 系统深色主题。
 
-### 自行编译
+## 🛠️ 技术栈 (Tech Stack)
 
-1. clone本仓库
-2. 完成 `flutter pub get`
-3. 执行 `flutter build apk --release` 打包 APK ，或 `flutter build apk --split-per-abi` 为每个 abi 打包 APK
+* **语言**: Kotlin / Java
+* **架构**: MVVM / MVP (根据实际情况修改)
+* **UI**: XML / Jetpack Compose
+* **网络**: Retrofit / OkHttp
+* **图片加载**: Glide / Coil
+* **依赖注入**: Hilt / Koin
 
-### 更新AAR部分
+## ⚡ 快速开始 (Getting Started)
 
-你可以自行将更新版的 [**Miao3trikeMod**](https://github.com/SuperMaxine/Miao3trikeMod) 打包为AAR，再编译本软件，以实现功能上的更新。
+如果你想在本地运行本项目，请按照以下步骤操作：
 
-不建议将 [**Miao3trike**](https://github.com/ESHIWU/Miao3trike) 打包为AAR并使用，因为本软件是为**Miao3trikeMod**设计的，理论上虽然可行但是**Miao3trike**缺少了许多功能。
+### 环境要求
+* Android Studio Ladybug | 2024.2.1 或更高版本
+* JDK 17+
 
-目前本软件打包的是Miao3trikeMod V1.2，相关内容位于 [Miao3trikeMod-AAR](Miao3trikeMod-AAR) 文件夹。
+### 安装步骤
 
-</details>
+1.  克隆仓库：
+    ```bash
+    git clone [https://github.com/SuperMaxine/Miao3trikeMod.git](https://github.com/SuperMaxine/Miao3trikeMod.git)
+    ```
+2.  在 Android Studio 中打开项目根目录。
+3.  等待 Gradle 同步完成（Sync Project with Gradle Files）。
+4.  连接 Android 设备或启动模拟器。
+5.  点击 **Run** (Shift+F10) 运行应用。
 
-## 致谢
+## 🤝 贡献 (Contributing)
 
-### 开源项目
+欢迎任何形式的贡献！如果你有好的想法：
 
-- 使用了 [Flutter](https://github.com/flutter/flutter) 框架与很多 Flutter 的包
-- [Miao3trike](https://github.com/ESHIWU/Miao3trike) 与 [Miao3trikeMod](https://github.com/SuperMaxine/Miao3trikeMod) 用于实现核心功能
+1.  Fork 本仓库
+2.  新建 Feat_xxx 分支
+3.  提交代码
+4.  新建 Pull Request
 
-### 其它
+## 📄 许可证 (License)
 
-- 使用Flutter进行开发
-- ~~`README.md`部分照抄了我的另一个仓库的README，另一部分照抄了[Miao3trikeMod](https://github.com/SuperMaxine/Miao3trikeMod)~~
-- `README.md`参考了部分开源项目
-- `README.md`使用了 [shields.io](https://shields.io/) 提供的内容
+本项目基于 MIT 许可证开源 - 详见 [LICENSE](LICENSE) 文件。
 
-### 贡献/参与者
+---
 
-感谢 [ESHIWU](https://github.com/ESHIWU) 与 [SuperMaxine](https://github.com/SuperMaxine) 开发的核心功能！没有他们就不可能有本项目。
-感谢所有参与到开发/测试中的朋友们(\*´▽｀)ノノ
+<div align="center">
+  Created with ❤️ by <a href="https://github.com/ESHIWU">ESHIWU</a>
+</div>
