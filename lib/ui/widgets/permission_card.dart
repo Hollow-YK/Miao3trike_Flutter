@@ -4,14 +4,14 @@ import 'package:miao3trikeflutter/core/native_bridge.dart';
 class PermissionCard extends StatelessWidget {
   final bool isAccessibilityEnabled;
   final bool isOverlayPermissionGranted;
-  final bool isServiceRunning;
+  //final bool isServiceRunning;
   final VoidCallback onRefresh;
 
   const PermissionCard({
     super.key,
     required this.isAccessibilityEnabled,
     required this.isOverlayPermissionGranted,
-    required this.isServiceRunning,
+    //required this.isServiceRunning,
     required this.onRefresh,
   });
 
@@ -29,7 +29,7 @@ class PermissionCard extends StatelessWidget {
                 const Icon(Icons.security, color: Colors.blue),
                 const SizedBox(width: 8),
                 const Text(
-                  '权限状态',
+                  '权限管理',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -57,11 +57,11 @@ class PermissionCard extends StatelessWidget {
               isOverlayPermissionGranted,
               () => NativeBridge.requestOverlayPermission(),
             ),
-            const SizedBox(height: 12),
+            /*onst SizedBox(height: 12),
             _buildStatusItem(
               '悬浮窗服务',
               isServiceRunning,
-            ),
+            ),*/
           ],
         ),
       ),
