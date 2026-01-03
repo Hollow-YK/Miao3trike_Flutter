@@ -86,7 +86,7 @@ class PermissionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusItem(String title, bool running) {
+  /*Widget _buildStatusItem(String title, bool running) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(
@@ -96,5 +96,5 @@ class PermissionCard extends StatelessWidget {
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(running ? '运行中' : '未运行'),
     );
-  }
+  }*/
 }
