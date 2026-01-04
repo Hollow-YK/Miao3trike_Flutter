@@ -164,7 +164,7 @@ class IntroScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'V1.0.1',
+                          'V1.0.2',
                           style: TextStyle(
                             color: darkVariant,
                             fontWeight: FontWeight.w600,
