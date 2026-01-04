@@ -4,6 +4,7 @@ import 'package:miao3trikeflutter/ui/screens/intro_screen.dart';
 import 'package:miao3trikeflutter/ui/screens/function_screen.dart';
 import 'package:miao3trikeflutter/ui/screens/settings_screen.dart';
 import 'package:miao3trikeflutter/core/services/app_state.dart';
+import 'package:miao3trikeflutter/core/services/theme_manager.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -20,24 +21,6 @@ class _MainScreenState extends State<MainScreen> {
     const IntroScreen(),
     const FunctionScreen(),
     const SettingsScreen(),
-  ];
-
-  static final List<BottomNavigationBarItem> _bottomNavItems = [
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.info_outline),
-      activeIcon: Icon(Icons.info),
-      label: '介绍',
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.touch_app_outlined),
-      activeIcon: Icon(Icons.touch_app),
-      label: '功能',
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.settings_outlined),
-      activeIcon: Icon(Icons.settings),
-      label: '设置',
-    ),
   ];
 
   void _onItemTapped(int index) {
@@ -64,6 +47,29 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context);
+    final seedColor = themeManager.seedColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    // 底部导航栏项目
+    final List<BottomNavigationBarItem> _bottomNavItems = [
+      BottomNavigationBarItem(
+        icon: Icon(Icons.info_outline),
+        activeIcon: Icon(Icons.info, color: seedColor),
+        label: '介绍',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.touch_app_outlined),
+        activeIcon: Icon(Icons.touch_app, color: seedColor),
+        label: '功能',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.settings_outlined),
+        activeIcon: Icon(Icons.settings, color: seedColor),
+        label: '设置',
+      ),
+    ];
+
     return Scaffold(
       body: PageView(
         controller: _pageController,
@@ -78,7 +84,7 @@ class _MainScreenState extends State<MainScreen> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
               spreadRadius: 2,
               offset: const Offset(0, -2),
@@ -89,9 +95,9 @@ class _MainScreenState extends State<MainScreen> {
           items: _bottomNavItems,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF00BCD4),
-          unselectedItemColor: Colors.grey.shade600,
+          backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+          selectedItemColor: seedColor,
+          unselectedItemColor: isDark ? Colors.grey[400] : Colors.grey.shade600,
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
           showUnselectedLabels: true,
           type: BottomNavigationBarType.fixed,

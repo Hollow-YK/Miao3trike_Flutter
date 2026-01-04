@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:miao3trikeflutter/core/services/app_state.dart';
+import 'package:miao3trikeflutter/core/services/theme_manager.dart';
 import 'package:miao3trikeflutter/ui/widgets/macro_settings_dialog.dart';
+import 'package:miao3trikeflutter/ui/screens/theme_setting_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final Random _random = Random();
   
   // 显示随机消息
-  void _showRandomMessage(BuildContext context) {
+  void _showRandomMessage(BuildContext context, ThemeManager themeManager) {
     // 90%概率显示第一条消息，10%概率显示第二条
     final randomValue = _random.nextDouble();
     final message = randomValue < 0.9 
@@ -35,7 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        backgroundColor: const Color(0xFF00BCD4),
+        backgroundColor: themeManager.seedColor,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -53,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showResetConfirmation(BuildContext context) {
+  /*void _showResetConfirmation(BuildContext context, ThemeManager themeManager) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -72,52 +74,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
               final appState = context.read<AppState>();
               appState.resetMacroConfig();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('所有设置已重置为默认值'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: const Text('所有设置已重置为默认值'),
+                  duration: const Duration(seconds: 2),
+                  backgroundColor: themeManager.seedColor,
                 ),
               );
             },
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
             child: const Text('确认重置'),
           ),
         ],
       ),
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context);
+    final seedColor = themeManager.seedColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    // 根据介绍页面的配色方案生成颜色变体
+    final lightVariant = isDark ? seedColor.withValues(alpha: 0.8) : seedColor.withValues(alpha: 0.1);
+    final mediumVariant = isDark ? seedColor.withValues(alpha: 0.6) : seedColor.withValues(alpha: 0.3);
+    final darkVariant = isDark ? seedColor.withValues(alpha: 0.9) : seedColor.withValues(alpha: 0.7);
+    //final buttonVariant = isDark ? seedColor.withValues(alpha: 0.5) : seedColor;
+    final subtleColor = isDark ? Colors.grey[400]! : Colors.grey.shade600;
+    final cardBackground = isDark ? Colors.grey[900]! : Colors.white;
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
             const SizedBox(height: 64),
             // 设置标题
-            const Text(
+            Text(
               '设置',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               '配置应用参数和查看相关信息',
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: subtleColor,
                 fontSize: 16,
               ),
             ),
 
             const SizedBox(height: 32),
 
-            // 宏设置卡片
+            /*// 宏设置卡片
             Card(
               elevation: 3,
+              color: cardBackground,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -127,14 +145,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Icon(
                           Icons.timer,
-                          color: Colors.cyan.shade700,
+                          color: darkVariant,
                         ),
                         const SizedBox(width: 12),
-                        const Text(
+                        Text(
                           '宏设置',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -143,7 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Text(
                       '调整宏操作的延迟参数和功能开关',
                       style: TextStyle(
-                        color: Colors.grey.shade600,
+                        color: subtleColor,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -163,7 +182,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: const Icon(Icons.settings),
                       label: const Text('打开宏设置'),
                       style: FilledButton.styleFrom(
-                        backgroundColor: const Color(0xFF00BCD4),
+                        backgroundColor: buttonVariant,
+                        foregroundColor: Colors.white,
                         minimumSize: const Size.fromHeight(48),
                       ),
                     ),
@@ -172,35 +192,129 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 20),*/
 
             // 其他设置
             Card(
               elevation: 3,
+              color: cardBackground,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '其他设置',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.settings_suggest,
+                          color: darkVariant,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          '应用设置',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // 添加宏设置入口
+                    ListTile(
+                      leading: Icon(
+                        Icons.timer_outlined,
+                        color: darkVariant,
                       ),
+                      title: Text(
+                        '宏设置',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '调整宏操作的延迟参数和功能开关',
+                        style: TextStyle(
+                          color: subtleColor,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: subtleColor,
+                      ),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const MacroSettingsDialog(),
+                        ).then((_) {
+                          // 使用mounted检查确保widget仍然存在
+                          if (mounted) {
+                            final appState = context.read<AppState>();
+                            appState.refreshAll();
+                          }
+                        });
+                      },
                     ),
                     const Divider(height: 1),
+                    // 添加主题设置入口
                     ListTile(
-                      leading: const Icon(Icons.restart_alt),
-                      title: const Text('重置所有设置'),
-                      subtitle: const Text('恢复所有设置为默认值'),
+                      leading: Icon(
+                        Icons.palette_outlined,
+                        color: darkVariant,
+                      ),
+                      title: Text(
+                        '主题设置',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '切换主题明暗与配色',
+                        style: TextStyle(
+                          color: subtleColor,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: subtleColor,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const ThemeSettingScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    /*const Divider(height: 1),
+                    ListTile(
+                      leading: Icon(
+                        Icons.restart_alt,
+                        color: darkVariant,
+                      ),
+                      title: Text(
+                        '重置所有设置',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '恢复所有设置为默认值',
+                        style: TextStyle(
+                          color: subtleColor,
+                        ),
+                      ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.restore),
+                        icon: Icon(
+                          Icons.restore,
+                          color: darkVariant,
+                        ),
                         onPressed: () {
-                          _showResetConfirmation(context);
+                          _showResetConfirmation(context, themeManager);
                         },
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
               ),
@@ -211,6 +325,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // 关于作者卡片
             Card(
               elevation: 3,
+              color: cardBackground,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -220,14 +335,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Icon(
                           Icons.people,
-                          color: Colors.purple.shade700,
+                          color: darkVariant,
                         ),
                         const SizedBox(width: 12),
-                        const Text(
+                        Text(
                           '关于作者',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -238,16 +354,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.cyan.shade50,
+                        color: Colors.cyan.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.cyan.shade100),
+                        border: Border.all(color: Colors.cyan.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 24,
                             backgroundColor: Colors.cyan,
-                            child: Icon(
+                            child: const Icon(
                               Icons.person,
                               color: Colors.white,
                             ),
@@ -257,18 +373,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   '原作作者',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Bilibili: 猫十五喵喵',
                                   style: TextStyle(
-                                    color: Colors.grey.shade700,
+                                    color: subtleColor,
                                   ),
                                 ),
                               ],
@@ -277,8 +394,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           IconButton(
                             onPressed: () => _openUrl(
                                 'https://space.bilibili.com/506666307'),
-                            icon: const Icon(Icons.open_in_new),
-                            color: Colors.cyan,
+                            icon: Icon(
+                              Icons.open_in_new,
+                              color: Colors.cyan,
+                            ),
                             tooltip: '打开作者主页',
                           ),
                         ],
@@ -291,16 +410,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.lightGreen.shade50,
+                        color: Colors.lightGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.lightGreen.shade100),
+                        border: Border.all(color: Colors.lightGreen.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 24,
                             backgroundColor: Colors.lightGreen,
-                            child: Icon(
+                            child: const Icon(
                               Icons.auto_fix_high,
                               color: Colors.white,
                             ),
@@ -310,18 +429,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   '魔改作者',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Bilibili: TheEternal',
                                   style: TextStyle(
-                                    color: Colors.grey.shade700,
+                                    color: subtleColor,
                                   ),
                                 ),
                               ],
@@ -330,8 +450,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           IconButton(
                             onPressed: () => _openUrl(
                                 'https://space.bilibili.com/8613786'),
-                            icon: const Icon(Icons.open_in_new),
-                            color: Colors.lightGreen,
+                            icon: Icon(
+                              Icons.open_in_new,
+                              color: Colors.lightGreen,
+                            ),
                             tooltip: '打开作者主页',
                           ),
                         ],
@@ -344,17 +466,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.blue.shade100),
+                        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 24,
                             backgroundColor: Colors.blue,
-                            child: Icon(
-                              Icons.auto_fix_high,
+                            child: const Icon(
+                              Icons.code,
                               color: Colors.white,
                             ),
                           ),
@@ -363,18 +485,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'FlutterUI套壳',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Bilibili: 域空Hollow',
                                   style: TextStyle(
-                                    color: Colors.grey.shade700,
+                                    color: subtleColor,
                                   ),
                                 ),
                               ],
@@ -383,8 +506,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           IconButton(
                             onPressed: () => _openUrl(
                                 'https://space.bilibili.com/1572457623'),
-                            icon: const Icon(Icons.open_in_new),
-                            color: Colors.blue,
+                            icon: Icon(
+                              Icons.open_in_new,
+                              color: Colors.blue,
+                            ),
                             tooltip: '打开作者主页',
                           ),
                         ],
@@ -395,16 +520,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                     // 彩蛋
                     GestureDetector(
-                      onTap: () => _showRandomMessage(context),
+                      onTap: () => _showRandomMessage(context, themeManager),
                       child: Container(
                         width: double.infinity,
                         height: 320,
                         margin: const EdgeInsets.only(top: 8),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: Colors.grey.shade50,
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                           border: Border.all(
-                            color: Colors.orange.shade200,
+                            color: mediumVariant,
                             width: 2,
                           ),
                         ),
@@ -421,8 +546,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-                                      Colors.orange.shade100,
-                                      Colors.orange.shade50,
+                                      lightVariant,
+                                      mediumVariant,
                                     ],
                                   ),
                                 ),
@@ -432,14 +557,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     Icon(
                                       Icons.emoji_emotions,
                                       size: 60,
-                                      color: Colors.orange.shade700,
+                                      color: darkVariant,
                                     ),
                                     const SizedBox(height: 12),
                                     Text(
                                       '点击有惊喜哦~',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.orange.shade800,
+                                        color: darkVariant,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -461,23 +586,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // 开源协议
             Card(
               elevation: 3,
+              color: cardBackground,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       '开源协议：MIT License',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       '本应用基于开源项目开发，遵循相关开源协议。',
                       style: TextStyle(
-                        color: Colors.grey.shade600,
+                        color: subtleColor,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -487,21 +614,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         ActionChip(
                           label: const Text('GitHub'),
-                          avatar: const Icon(Icons.code, size: 18),
+                          avatar: Icon(Icons.code, size: 18, color: darkVariant),
                           onPressed: () {
                             _openUrl('https://github.com/Hollow-YK/Miao3trike_Flutter');
                           },
                         ),
                         ActionChip(
                           label: const Text('Miao3trike'),
-                          avatar: const Icon(Icons.code, size: 18),
+                          avatar: Icon(Icons.code, size: 18, color: darkVariant),
                           onPressed: () {
                             _openUrl('https://github.com/SuperMaxine/Miao3trikeMod');
                           },
                         ),
                         ActionChip(
                           label: const Text('Miao3trikeMod'),
-                          avatar: const Icon(Icons.code, size: 18),
+                          avatar: Icon(Icons.code, size: 18, color: darkVariant),
                           onPressed: () {
                             _openUrl('https://github.com/ESHIWU/Miao3trike');
                           },
@@ -522,14 +649,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Text(
                     'Miao3trike Flutter',
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: subtleColor,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '感谢作者们！',
                     style: TextStyle(
-                      color: Colors.grey.shade500,
+                      color: subtleColor,
                       fontSize: 12,
                     ),
                   ),
