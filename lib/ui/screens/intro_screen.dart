@@ -11,7 +11,7 @@ class IntroScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 64),
+            const SizedBox(height: 128),
             Center(
               child: Column(
                 children: [
@@ -80,7 +80,7 @@ class IntroScreen extends StatelessWidget {
                     ),
                   ),
                   
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 64),
                   
                   // 应用名称
                   const Text(
@@ -105,9 +105,9 @@ class IntroScreen extends StatelessWidget {
                     ),
                   ),
                   
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 64),
                   
-                  // 版本标签
+                  // UI版本标签
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -138,7 +138,61 @@ class IntroScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'v1.0.0 • Flutter UI',
+                          'Flutter UI • ',
+                          style: TextStyle(
+                          color: Colors.cyan.shade700,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          'V1.0.1',
+                          style: TextStyle(
+                            color: Colors.cyan.shade800,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Core 版本标签
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.cyan.shade100,
+                          Colors.cyan.shade50,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.cyan.shade300,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Core • ',
+                          style: TextStyle(
+                          color: Colors.cyan.shade700,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          'Miao3trikeMod V1.2',
                           style: TextStyle(
                             color: Colors.cyan.shade800,
                             fontWeight: FontWeight.w600,

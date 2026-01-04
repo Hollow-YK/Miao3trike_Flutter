@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android" alt="Platform" />
     <img src="https://img.shields.io/badge/Language-Dart%20%2F%20Kotlin%20%2F%20Java-blue?style=flat-square&logo=dart" alt="Language" />
     <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" />
-    <img src="https://img.shields.io/github/stars/Hollow-YK/Miao3trike_Flutter?style=social" alt="Stars" />
+    <img src="https://img.shields.io/github/stars/Hollow-YK/Miao3trike_Flutter?style=flat-square&logo=github&color=darkgreen" alt="Stars" />
   </p>
 </div>
 
@@ -90,7 +90,7 @@
 
 不建议将 [**Miao3trike**](https://github.com/ESHIWU/Miao3trike) 打包为AAR并使用，因为本软件是为**Miao3trikeMod**设计的，理论上虽然可行但是**Miao3trike**缺少了许多功能。
 
-目前本软件打包的是Miao3trikeMod V1.2，相关内容位于 [Miao3trikeMod-AAR](Miao3trikeMod-AAR) 文件夹。
+目前本软件打包的是 Miao3trikeMod V1.2 ，相关内容位于 [Miao3trikeMod_AAR](https://github.com/Hollow-YK/Miao3trikeMod_AAR)。Miao3trikeMod_AAR 不再会放在此仓库内。
 
 </details>
 

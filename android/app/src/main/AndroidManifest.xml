@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <application
-        android:label="miao3trikeflutter"
+        android:label="Miao3trike Flutter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         tools:replace="android:label,android:icon"
@@ -29,9 +29,21 @@
                 android:value="Miao3trikeMod服务" />
         </service>
 
-        <!-- 无障碍服务 -->
+        <!-- 无障碍服务
         <service
             android:name=".VolumeKeyAccessibilityService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service> -->
+        <service
+            android:name="com.miao3strikemod.matches.VolumeKeyAccessibilityService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
