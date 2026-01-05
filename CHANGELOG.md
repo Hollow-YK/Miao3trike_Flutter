@@ -56,9 +56,9 @@ UI版本：V1.0.1
 
 ---
 
-## UI V1.0.1 + Core V1.2
+## UI V1.0.2 + Core V1.2
 
-UI版本：V1.0.1
+UI版本：V1.0.2
 核心版本：Miao3trikeMod V1.2
 
 本软件的Release将会标注UI版本与核心版本，其中UI版本为Flutter编写的代码的版本，核心版本则是被打成AAR来实现核心功能用的Miao3trike或其改版的版本。
@@ -80,3 +80,4 @@ UI版本：V1.0.1
 ### 改进 | Improved
 
 * UI 优化
+* 为README.md添加了软件截图
