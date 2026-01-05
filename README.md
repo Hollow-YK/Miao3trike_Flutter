@@ -39,13 +39,30 @@
 在使用该版本过程中发现的Bug请在本repo进行反馈，除非你能确定是来自 [**Miao3trikeMod**](https://github.com/SuperMaxine/Miao3trikeMod) 的代码导致的。
 ~~但是由于本人对Android原生开发可以说一窍不通，所以有些Bug可能不会修~~
 
+### 软件截图
+
+<details><summary>点击查看截图</summary>
+
+<div align="center" style="overflow-x: auto;">
+
+| 主题模式 | 介绍页面 | 功能页面 | 设置页面 | 主题设置 |
+|:---|:---|:---|:---|:---|
+| **亮色模式** | [![介绍页面-亮色模式](Doc/images/intro_screen.jpg)](Doc/images/intro_screen.jpg) | [![功能页面-亮色模式](Doc/images/function_screen.jpg)](Doc/images/function_screen.jpg) | [![设置页面-亮色模式](Doc/images/settings_screen.jpg)](Doc/images/settings_screen.jpg) | [![主题设置-亮色模式](Doc/images/theme_setting_screen.jpg)](Doc/images/theme_setting_screen.jpg) |
+| **暗色模式** | [![介绍页面-暗色模式](Doc/images/intro_screen_dark.jpg)](Doc/images/intro_screen_dark.jpg) | [![功能页面-暗色模式](Doc/images/function_screen_dark.jpg)](Doc/images/function_screen_dark.jpg) | [![设置页面-暗色模式](Doc/images/settings_screen_dark.jpg)](Doc/images/settings_screen_dark.jpg) | [![主题设置-暗色模式](Doc/images/theme_setting_screen_dark.jpg)](Doc/images/theme_setting_screen_dark.jpg) |
+
+</div>
+
+<sub>表格支持水平滚动，在窄屏幕上可左右滑动查看。点击任意图片可查看原图。</sub>
+
+</details>
+
 ### 使用教程
 
 **Miao3trikeFlutter** 功能使用方法与 **Miao3trikeMod** 几乎一样，若你使用过 Miao3trikeMod ，可以较快上手。
 
 下面的使用教程是从 **Miao3trikeMod** 那里复制来的。
 
-<details>
+<details><summary>展开教程</summary>
 
 - 划火柴：**第一次使用务必校准暂停按钮位置！（点击悬浮开关，将出现的蓝色按钮拖动到游戏中暂停按钮的真实位置，一次设置，永久生效）** 正常使用时，在**游戏暂停**状态下点击**悬浮开关**，开启划火柴操作录制，此时拖动干员并不会真的拖动干员，而是绘制一条拖放路径，松手后，应用会自动播放“点暂停→拖出干员→手机返回键”的宏操作，放置到位后之后需要自行调整干员朝向。
 - 零帧撤退与放技能：在**游戏暂停**状态下按下手机的**音量+**按键，开启干员位置录制，此时点击干员位置，松手后，应用会自动播放“点暂停→点击干员→点暂停”的宏脚本，然后可以自己选择开干员技能或是撤退。
@@ -76,7 +93,7 @@
 
 ## 开发相关
 
-<details>
+<details><summary>自行编译与 AAR</summary>
 
 ### 自行编译
 

@@ -281,7 +281,7 @@ class _FunctionScreenState extends State<FunctionScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: isDark ? [mediumVariant.withValues(alpha: 0.1),mediumVariant.withValues(alpha: 0.3),mediumVariant.withValues(alpha: 0.5),lightVariant,lightVariant,] : [lightVariant,lightVariant,lightVariant,lightVariant,mediumVariant,],
+                      colors: isDark ? [mediumVariant.withValues(alpha: 0.1),mediumVariant.withValues(alpha: 0.3),mediumVariant.withValues(alpha: 0.5),lightVariant,] : [lightVariant,lightVariant,lightVariant,lightVariant,mediumVariant,],
                     ),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: mediumVariant),
