@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     // 底部导航栏项目
-    final List<BottomNavigationBarItem> _bottomNavItems = [
+    final List<BottomNavigationBarItem> bottomNavItems = [
       BottomNavigationBarItem(
         icon: Icon(Icons.info_outline),
         activeIcon: Icon(Icons.info, color: seedColor),
@@ -92,7 +92,7 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
         child: BottomNavigationBar(
-          items: _bottomNavItems,
+          items: bottomNavItems,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           backgroundColor: isDark ? Colors.grey[900] : Colors.white,

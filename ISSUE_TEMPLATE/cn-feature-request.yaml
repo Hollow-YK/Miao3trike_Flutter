@@ -1,0 +1,38 @@
+name: 需求建议（使用中文）
+description: 新功能、建议等
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 请确认自己完成了下列必选项之后再进行勾选，若未完成必选项或勾选了"我未仔细阅读"选项将视为自愿接受被直接关闭 Issue
+      options:
+        - label: 我基本确定这是一个新功能/建议，而不是遇到了 Bug
+          required: false
+        - label: 我未仔细阅读这些内容，只是一键已读[所有内容](/Hollow-YK/Miao3trike_Flutter/issues)，并相信这不会影响问题的处理
+          required: false
+        - label: 我填写了简短且清晰明确的标题，以便开发者在翻阅 Issue 列表时能快速确定大致问题。而不是“一个建议”、“卡住了”等
+          required: false
+        - label: 我使用的是当前更新版本的最新版, 并已查看版本发布至今的 [更新内容](https://github.com/Hollow-YK/Miao3trike_Flutter/commits/), [Pull Requests](https://github.com/Hollow-YK/Miao3trike_Flutter/pulls) 中尚未发布的更新内容，确认我的建议未被提及
+          required: false
+        - label: 我已检查了 [常见问题](https://github.com/Hollow-YK/Miao3trike_Flutter/README.md#常见问题), [画大饼](https://github.com/Hollow-YK/Miao3trike_Flutter/README.md#常见问题), [活跃议题](https://github.com/Hollow-YK/Miao3trike_Flutter/issues), [已关闭议题](https://github.com/Hollow-YK/Miao3trike_Flutter/issues?q=is%3Aissue%20state%3Aclosed) 确认我的建议未被提及
+          required: false
+  - type: textarea
+    id: describe
+    attributes:
+      label: 说说你遇到的问题？
+    validations:
+      required: false
+  - type: textarea
+    id: solution
+    attributes:
+      label: 有什么好的想法？
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: 其他内容
+      description: 关于该需求建议的任何其他背景或屏幕截图。
+    validations:
+      required: false

@@ -1,0 +1,80 @@
+name: Bug 反馈（使用中文）
+description: UI错位、软件卡死等
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 请确认自己完成了下列必选项之后再进行勾选，若未完成必选项或勾选了"我未仔细阅读"选项将视为自愿接受被直接关闭 Issue
+      options:
+        - label: 我理解 Issue 是用于反馈和解决问题的，而非吐槽评论区，将尽可能提供更多信息帮助问题解决
+          required: false
+        - label: 我未仔细阅读这些内容，只是一键已读[所有内容](/Hollow-YK/Miao3trike_Flutter/issues)，并相信这不会影响问题的处理
+          required: false
+        - label: 我填写了简短且清晰明确的标题，以便开发者在翻阅 Issue 列表时能快速确定大致问题。而不是“一个建议”、“卡住了”等
+          required: false
+        - label: 我使用的是当前更新版本的最新版, 并已查看版本发布至今的 [更新内容](https://github.com/Hollow-YK/Miao3trike_Flutter/commits/), [Pull Requests](https://github.com/Hollow-YK/Miao3trike_Flutter/pulls) 中尚未发布的更新内容并未提及该 Bug 已被修复的情况
+          required: false
+        - label: 我已检查了 [常见问题](https://github.com/Hollow-YK/Miao3trike_Flutter/README.md#常见问题), [活跃议题](https://github.com/Hollow-YK/Miao3trike_Flutter/issues), [已关闭议题](https://github.com/Hollow-YK/Miao3trike_Flutter/issues?q=is%3Aissue%20state%3Aclosed) 确认我的问题未被提及
+          required: false
+  - type: textarea
+    id: describe
+    attributes:
+      label: 问题描述
+      description: 描述问题时请尽可能详细
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: |
+        请提供 Miao3trike Flutter 版本。可在 *Miao3trike Flutter -> 介绍* 中找到。
+        请分别填写UI版本与Core版本，最终应有 2 行版本信息。
+      placeholder: |
+        UI 版本:
+        Core 版本:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 配置详情
+      description: |
+        **请将 *Miao3trike Flutter -> 设置 -> 宏设置* 中的全部信息填写在下面。最终应有 7 项内容。**  
+      placeholder: |
+        启动延迟：
+        步骤延迟：
+        拖到时长：
+        保持延迟：
+        步进宏延迟：
+        是否启用音量+键控制：
+        是否启用音量-键控制：
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: 配置信息
+      description: |
+        请说明操作系统及版本、Android 版本、手机品牌、手机型号、处理器型号、运行内存、屏幕分辨率等信息。
+        这些信息可以在 *设置 -> 关于手机 -> 全部参数与信息* 中找到（不同手机可能不同）。
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图或录屏
+      description: |
+        可上传屏幕截图或录制以帮助解释你的问题，包括但不限于游戏画面截图、Miao3trike Flutter 界面截图等。
+        若文件体积过大可压缩后再上传
+    validations:
+      required: false
+  - type: textarea
+    id: others
+    attributes:
+      label: 还有别的吗？
+      description: |
+        任何能让我们对你所遇到的问题有更多了解的东西
+    validations:
+      required: false

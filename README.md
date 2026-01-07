@@ -1,12 +1,10 @@
-# miao3trikeflutter
-
 <div align="center">
   <img src="images/icon.png" alt="Logo" width="100" height="100">
 
-  <h1 align="center">Miao3trike Flutter</h1>
+  # Miao3trike Flutter
 
   <p align="center">
-    Miao3trikeFlutter：一个套了 Flutter 写的 Mental Design UI 的明日方舟手机版划火柴小工具的魔改版
+    一个套了 Flutter 写的 Mental Design UI 的明日方舟手机版划火柴小工具的魔改版
     <br />
     <a href="https://github.com/Hollow-YK/Miao3trike_Flutter/issues">报告 Bug</a>
   </p>
@@ -38,6 +36,21 @@
 
 在使用该版本过程中发现的Bug请在本repo进行反馈，除非你能确定是来自 [**Miao3trikeMod**](https://github.com/SuperMaxine/Miao3trikeMod) 的代码导致的。
 ~~但是由于本人对Android原生开发可以说一窍不通，所以有些Bug可能不会修~~
+
+### 功能介绍
+
+- 划火柴（零帧部署）
+- 零帧选取
+- 逐帧步进（过一帧）
+
+### 画大饼
+
+以后有概率添加的功能，括号里是可能需要的时间
+带星号的项目以目前作者水平来说难以实现
+
+- 检查更新/自动更新（约一个月）
+- 简洁版（约三个月）
+- *开局暂停（超过半年）
 
 ### 软件截图
 
