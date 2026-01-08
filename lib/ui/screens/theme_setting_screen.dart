@@ -481,6 +481,70 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
                 ),
               ),
             ),
+            
+            const SizedBox(height: 24),
+            
+            // 主题颜色标题
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Text(
+                '主题颜色',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ),
+            
+            // 预定义颜色卡片
+            Card(
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Arknights',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      '主要从明日方舟内寻找的配色\n大多数干员是从“双识别色”中选取的\n欢迎反馈建议',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w300,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildColorGrid(themeManager, themeManager.arknightsColors),
+                    Text(
+                      '音律联觉',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      '主要从明日方舟内对应名片寻找的配色',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w300,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildColorGrid(themeManager, themeManager.ambienceSynesthesiaColors),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

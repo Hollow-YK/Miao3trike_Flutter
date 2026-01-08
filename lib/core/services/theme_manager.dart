@@ -48,6 +48,32 @@ class ThemeManager with ChangeNotifier {
     const ColorOption(color: Colors.deepOrange, name: '深橙'),      // Material deepOrange
   ];
   
+  /// 干员识别色选项列表
+  final List<ColorOption> arknightsColors = [
+    const ColorOption(color: Color(0xFF16D4FF), name: 'Arknights'),// 取自更新公告
+    const ColorOption(color: Color(0xFF0098DC), name: '罗德岛'),// 取自 名片-干员收集信息
+    const ColorOption(color: Color(0xFFBE2D56), name: '桃金娘'),// 取自 名片祝鼓祭-干员收集信息
+    const ColorOption(color: Color(0xFFC6DE54), name: '凯尔希'),
+    const ColorOption(color: Color(0xFFEEA473), name: '克洛丝'),
+    const ColorOption(color: Color(0xFFDACDA1), name: '铃兰'),
+    const ColorOption(color: Color(0xFFFF1414), name: '新能源天使'),
+    const ColorOption(color: Color(0xFFBA0000), name: '红豆'),
+  ];
+  
+  /// 音律联觉颜色选项列表
+  final List<ColorOption> ambienceSynesthesiaColors = [
+    // 2024-不觅浪尘
+    // 行者、遗君均未对干员收集信息做出特殊颜色设定，故不加入此列表
+    const ColorOption(color: Color(0xFF706AE1), name: '梦人'),// 取自 名片梦人-干员收集信息
+    const ColorOption(color: Color(0xFFDB5C7E), name: '☆超新星☆'),// 取自 名片☆超新星☆-干员收集信息
+    // 2025-熠曲丰碑
+    const ColorOption(color: Color(0xFFFC5040), name: '熠曲丰碑'),// 取自 名片熠曲丰碑-干员收集信息
+    const ColorOption(color: Color(0xFFAEC237), name: '移星桂冠'),// 取自 名片移星桂冠-干员收集信息
+    const ColorOption(color: Color(0xFF325EF4), name: '冰纹玉釉'),// 取自 名片冰纹玉釉-干员收集信息
+    const ColorOption(color: Color(0xFFA02B2F), name: '雾色秘访'),// 取自 名片雾色秘访-干员收集信息
+    const ColorOption(color: Color(0xFFAEC237), name: '时序花圃'),// 取自 名片时序花圃-干员收集信息 （没错和移星桂冠用的是同一个颜色）
+  ];
+  
   /// 自定义颜色列表
   final List<ColorOption> _customColors = [];
 
