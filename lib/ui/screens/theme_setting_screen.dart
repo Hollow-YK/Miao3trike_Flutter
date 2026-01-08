@@ -12,122 +12,154 @@ class ThemeSettingScreen extends StatefulWidget {
 
 /// 主题设置页面的状态类
 class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
-  final TextEditingController _colorNameController = TextEditingController();
+  // 用于颜色输入的局部状态
+  bool _isHexInputMode = true;
+  final TextEditingController _hexController = TextEditingController();
+  final TextEditingController _rController = TextEditingController();
+  final TextEditingController _gController = TextEditingController();
+  final TextEditingController _bController = TextEditingController();
+  final TextEditingController _inputNameController = TextEditingController();
+  final FocusNode _hexFocusNode = FocusNode();
+  final FocusNode _rFocusNode = FocusNode();
+  final FocusNode _gFocusNode = FocusNode();
+  final FocusNode _bFocusNode = FocusNode();
 
-  /// 显示自定义颜色对话框
-  void _showCustomColorDialog(BuildContext context, ThemeManager themeManager) {
-    Color selectedColor = themeManager.seedColor;
-    _colorNameController.text = '自定义颜色';
+  /// 处理颜色添加
+  void _handleAddColor(BuildContext context, ThemeManager themeManager) {
+    final colorName = _inputNameController.text.trim();
     
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('自定义颜色'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 颜色选择器
-              SizedBox(
-                height: 200,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 6,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemCount: 36,
-                  itemBuilder: (context, index) {
-                    // 生成颜色网格
-                    final hue = (index * 10) % 360;
-                    final color = HSLColor.fromAHSL(1, hue.toDouble(), 0.7, 0.5).toColor();
-                    
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedColor = color;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: selectedColor.value == color.value
-                                ? Colors.white
-                                : Colors.transparent,
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              // 自定义颜色名称
-              TextField(
-                controller: _colorNameController,
-                decoration: const InputDecoration(
-                  labelText: '颜色名称',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // 颜色预览
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: selectedColor,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  '预览: ${selectedColor.value.toRadixString(16).toUpperCase()}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+    try {
+      if (_isHexInputMode) {
+        final hexValue = _hexController.text.trim();
+        if (hexValue.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('请输入十六进制颜色值'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+        
+        // 清理十六进制字符串
+        String hex = hexValue.replaceAll('#', '').toUpperCase();
+        
+        // 处理3位简写格式（如 #FFF）
+        if (hex.length == 3) {
+          hex = hex.split('').map((c) => c + c).join();
+        }
+        
+        // 确保是6位十六进制数
+        if (hex.length == 6) {
+          final color = Color(int.parse('FF$hex', radix: 16));
+          final name = colorName.isEmpty ? '#$hex' : colorName;
+          
+          themeManager.addCustomColor(color, name);
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('已添加颜色 $name'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          
+          // 清空输入
+          _hexController.clear();
+          _inputNameController.clear();
+          
+          // 切换焦点
+          _hexFocusNode.requestFocus();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('请输入6位十六进制颜色值（如 FF5733）'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+      } else {
+        final rText = _rController.text.trim();
+        final gText = _gController.text.trim();
+        final bText = _bController.text.trim();
+        
+        if (rText.isEmpty || gText.isEmpty || bText.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('请输入完整的RGB值'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+        
+        final r = int.parse(rText);
+        final g = int.parse(gText);
+        final b = int.parse(bText);
+        
+        // 验证范围
+        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('RGB值必须在0-255之间'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+        
+        final color = Color.fromRGBO(r, g, b, 1.0);
+        final displayName = colorName.isEmpty ? 'RGB($r,$g,$b)' : colorName;
+        
+        themeManager.addCustomColor(color, displayName);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('已添加颜色 $displayName'),
+            duration: const Duration(seconds: 2),
           ),
+        );
+        
+        // 清空输入
+        _rController.clear();
+        _gController.clear();
+        _bController.clear();
+        _inputNameController.clear();
+        
+        // 切换焦点
+        _rFocusNode.requestFocus();
+      }
+      
+    } on FormatException {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('格式错误：请输入有效的数值'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (_colorNameController.text.trim().isNotEmpty) {
-                themeManager.addCustomColor(
-                  selectedColor,
-                  _colorNameController.text.trim(),
-                );
-                themeManager.setSeedColor(selectedColor);
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('自定义颜色已保存并应用'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              }
-            },
-            child: const Text('保存并应用'),
-          ),
-        ],
-      ),
-    );
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('添加失败: $e'),
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _colorNameController.dispose();
+    _hexController.dispose();
+    _rController.dispose();
+    _gController.dispose();
+    _bController.dispose();
+    _inputNameController.dispose();
+    _hexFocusNode.dispose();
+    _rFocusNode.dispose();
+    _gFocusNode.dispose();
+    _bFocusNode.dispose();
     super.dispose();
   }
 
@@ -192,28 +224,17 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
             
             const SizedBox(height: 24),
             
-            // 主题颜色标题和添加按钮
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Text(
-                      '主题颜色',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
+            // 主题颜色标题
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Text(
+                '主题颜色',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
-                  onPressed: () => _showCustomColorDialog(context, themeManager),
-                  tooltip: '添加自定义颜色',
-                ),
-              ],
+              ),
             ),
             
             // 预定义颜色卡片
@@ -234,155 +255,228 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
                     ),
                     const SizedBox(height: 12),
                     _buildColorGrid(themeManager, themeManager.predefinedColors),
-                  ],
-                ),
-              ),
-            ),
-            
-            // 自定义颜色卡片
-            if (themeManager.customColors.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Card(
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '自定义颜色',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '自定义颜色',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 20),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('确认清空'),
-                                  content: const Text('确定要清空所有自定义颜色吗？'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(context).pop(),
-                                      child: const Text('取消'),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 20),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('确认清空'),
+                                content: const Text('确定要清空所有自定义颜色吗？'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text('取消'),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () {
+                                      themeManager.clearCustomColors();
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('已清空自定义颜色'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text('确认'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          tooltip: '清空自定义颜色',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // 颜色输入区域
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '添加自定义颜色',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          
+                          // 颜色名称输入
+                          TextField(
+                            controller: _inputNameController,
+                            decoration: const InputDecoration(
+                              labelText: '颜色名称（可选）',
+                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(Icons.title),
+                              hintText: '留空将自动生成名称',
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          
+                          // 输入模式切换按钮
+                          Row(
+                            children: [
+                              Expanded(
+                                child: SegmentedButton<bool>(
+                                  segments: const [
+                                    ButtonSegment<bool>(
+                                      value: true,
+                                      label: Text('十六进制'),
+                                      icon: Icon(Icons.tag),
                                     ),
-                                    FilledButton(
-                                      onPressed: () {
-                                        themeManager.clearCustomColors();
-                                        Navigator.of(context).pop();
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('已清空自定义颜色'),
-                                            duration: Duration(seconds: 2),
-                                          ),
-                                        );
-                                      },
-                                      child: const Text('确认'),
+                                    ButtonSegment<bool>(
+                                      value: false,
+                                      label: Text('RGB'),
+                                      icon: Icon(Icons.format_color_fill),
                                     ),
                                   ],
+                                  selected: {_isHexInputMode},
+                                  onSelectionChanged: (Set<bool> newSelection) {
+                                    setState(() {
+                                      _isHexInputMode = newSelection.first;
+                                      // 切换焦点
+                                      if (_isHexInputMode) {
+                                        _hexFocusNode.requestFocus();
+                                      } else {
+                                        _rFocusNode.requestFocus();
+                                      }
+                                    });
+                                  },
                                 ),
-                              );
-                            },
-                            tooltip: '清空自定义颜色',
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      _buildColorGrid(themeManager, themeManager.customColors, isCustom: true),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            
-            const SizedBox(height: 24),
-            
-            // 预览卡片
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Text(
-                '预览',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-            ),
-            
-            Card(
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '当前主题预览',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: themeManager.seedColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 12),
+                          
+                          // 颜色值输入区域
+                          if (_isHexInputMode)
+                            TextField(
+                              controller: _hexController,
+                              focusNode: _hexFocusNode,
+                              decoration: const InputDecoration(
+                                labelText: '十六进制颜色值',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.tag),
+                                hintText: 'FF5733 或 #FF5733',
+                                prefixText: '#',
+                              ),
+                              maxLength: 7,
+                              onChanged: (value) {
+                                // 转换为大写
+                                if (value.isNotEmpty) {
+                                  _hexController.text = value.toUpperCase();
+                                  _hexController.selection = TextSelection.collapsed(offset: _hexController.text.length);
+                                }
+                              },
+                              onSubmitted: (_) {
+                                _handleAddColor(context, themeManager);
+                              },
+                            )
+                          else
+                            Row(
                               children: [
-                                Text(
-                                  '主题色：${_getColorName(themeManager)}',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                Expanded(
+                                  child: TextField(
+                                    controller: _rController,
+                                    focusNode: _rFocusNode,
+                                    decoration: const InputDecoration(
+                                      labelText: 'R',
+                                      border: OutlineInputBorder(),
+                                      prefixIcon: Icon(Icons.circle, color: Colors.red, size: 16),
+                                      hintText: '0-255',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 3,
+                                    onSubmitted: (_) {
+                                      _gFocusNode.requestFocus();
+                                    },
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _getCurrentThemeModeName(themeManager),
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _gController,
+                                    focusNode: _gFocusNode,
+                                    decoration: const InputDecoration(
+                                      labelText: 'G',
+                                      border: OutlineInputBorder(),
+                                      prefixIcon: Icon(Icons.circle, color: Colors.green, size: 16),
+                                      hintText: '0-255',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 3,
+                                    onSubmitted: (_) {
+                                      _bFocusNode.requestFocus();
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _bController,
+                                    focusNode: _bFocusNode,
+                                    decoration: const InputDecoration(
+                                      labelText: 'B',
+                                      border: OutlineInputBorder(),
+                                      prefixIcon: Icon(Icons.circle, color: Colors.blue, size: 16),
+                                      hintText: '0-255',
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 3,
+                                    onSubmitted: (_) {
+                                      _handleAddColor(context, themeManager);
+                                    },
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Icon(
-                            themeManager.themeMode == 'dark'
-                                ? Icons.dark_mode
-                                : themeManager.themeMode == 'light'
-                                    ? Icons.light_mode
-                                    : Icons.brightness_auto,
-                            color: themeManager.seedColor,
+                          
+                          const SizedBox(height: 16),
+                          
+                          // 添加按钮
+                          Row(
+                            children: [
+                              const Spacer(),
+                              FilledButton.icon(
+                                onPressed: () {
+                                  _handleAddColor(context, themeManager);
+                                },
+                                icon: const Icon(Icons.add),
+                                label: const Text('添加颜色'),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
+                    
+                    // 自定义颜色网格
+                    if (themeManager.customColors.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      _buildColorGrid(themeManager, themeManager.customColors, isCustom: true),
+                    ],
                   ],
                 ),
               ),
@@ -494,13 +588,7 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
                     color: _getContrastColor(colorOption.color),
                     size: 24,
                   )
-                : isCustom
-                    ? Icon(
-                        Icons.edit_outlined,
-                        color: _getContrastColor(colorOption.color),
-                        size: 20,
-                      )
-                    : null,
+                : null,
           ),
           const SizedBox(height: 6),
           // 颜色名称
@@ -554,29 +642,5 @@ class _ThemeSettingScreenState extends State<ThemeSettingScreen> {
   Color _getContrastColor(Color backgroundColor) {
     final luminance = backgroundColor.computeLuminance();
     return luminance > 0.5 ? Colors.black : Colors.white;
-  }
-
-  /// 获取当前主题模式的显示名称
-  String _getCurrentThemeModeName(ThemeManager themeManager) {
-    switch (themeManager.themeMode) {
-      case 'light':
-        return '浅色模式';
-      case 'dark':
-        return '深色模式';
-      case 'system':
-      default:
-        return '跟随系统';
-    }
-  }
-
-  /// 获取颜色名称
-  String _getColorName(ThemeManager themeManager) {
-    final allColors = themeManager.allColors;
-    final currentColor = themeManager.seedColor;
-    final colorOption = allColors.firstWhere(
-      (c) => c.color.value == currentColor.value,
-      orElse: () => const ColorOption(color: Colors.grey, name: '自定义'),
-    );
-    return colorOption.name;
   }
 }

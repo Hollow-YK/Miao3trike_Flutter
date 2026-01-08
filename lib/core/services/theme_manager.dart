@@ -30,21 +30,22 @@ class ThemeManager with ChangeNotifier {
   
   /// 预定义颜色选项列表
   final List<ColorOption> predefinedColors = [
-    const ColorOption(color: Color(0xFF00BCD4), name: '默认青'),      // Cyan 500
-    const ColorOption(color: Color(0xFF2196F3), name: '默认蓝'),      // Material Blue
-    const ColorOption(color: Color(0xFF4CAF50), name: '默认绿'),      // Material Green
-    const ColorOption(color: Color(0xFFF44336), name: '默认红'),      // Material Red
-    const ColorOption(color: Color(0xFFFF9800), name: '默认橙'),      // Material Orange
-    const ColorOption(color: Color(0xFF66CCFF), name: '天依蓝'),
-    const ColorOption(color: Color(0xFF39C5BB), name: '葱绿色'),
-    const ColorOption(color: Color(0xFFEE0000), name: '阿绫红'),
-    const ColorOption(color: Color(0xFF9C27B0), name: '紫色'),        // Material Purple
-    const ColorOption(color: Color(0xFF607D8B), name: '蓝灰色'),      // Blue Grey
-    const ColorOption(color: Color(0xFF795548), name: '棕色'),        // Brown
-    const ColorOption(color: Color(0xFFE91E63), name: '粉红色'),      // Pink
-    const ColorOption(color: Color(0xFF8BC34A), name: '浅绿色'),      // Light Green
-    const ColorOption(color: Color(0xFFFFC107), name: '琥珀色'),      // Amber
-    const ColorOption(color: Color(0xFF673AB7), name: '深紫色'),      // Deep Purple
+    const ColorOption(color: Colors.red, name: '红'),      // Material Red
+    const ColorOption(color: Colors.pink, name: '粉'),      // Material Pink
+    const ColorOption(color: Colors.purple, name: '紫'),        // Material Purple
+    const ColorOption(color: Colors.deepPurple, name: '深紫'),        // Material deepPurple
+    const ColorOption(color: Colors.indigo, name: '紫'),        // Material Purple
+    const ColorOption(color: Colors.blue, name: '蓝'),      // Material Blue
+    const ColorOption(color: Colors.lightBlue, name: '浅蓝'),      // Material lightBlue
+    const ColorOption(color: Colors.cyan, name: '青'),      // Material Cyan
+    const ColorOption(color: Colors.teal, name: '深青'),      // Material Teal
+    const ColorOption(color: Colors.green, name: '绿'),      // Material Green
+    const ColorOption(color: Colors.lightGreen, name: '浅绿'),      // Material lightGreen
+    const ColorOption(color: Colors.lime, name: '黄绿'),      // Material Lime
+    const ColorOption(color: Colors.yellow, name: '黄'),      // Material Yellow
+    const ColorOption(color: Colors.amber, name: '琥珀'),      // Material Amber
+    const ColorOption(color: Colors.orange, name: '橙'),      // Material Orange
+    const ColorOption(color: Colors.deepOrange, name: '深橙'),      // Material deepOrange
   ];
   
   /// 自定义颜色列表
@@ -55,7 +56,7 @@ class ThemeManager with ChangeNotifier {
 
   // 内部状态变量
   String _themeMode = 'system';
-  int _seedColor = 0xFF00BCD4;
+  int _seedColor = 0x3264FF; // 默认种子颜色（蓝色）
 
   /// 获取所有颜色选项（预定义 + 自定义）
   List<ColorOption> get allColors {
@@ -164,6 +165,40 @@ class ThemeManager with ChangeNotifier {
       await _saveSettings();
       notifyListeners();
     }
+  }
+
+  /// 通过十六进制字符串添加颜色
+  Future<void> addCustomColorFromHex(String hexString, String name) async {
+    try {
+      // 清理十六进制字符串
+      String hex = hexString.replaceAll('#', '').toUpperCase();
+      
+      // 处理3位简写格式（如 #FFF）
+      if (hex.length == 3) {
+        hex = hex.split('').map((c) => c + c).join();
+      }
+      
+      // 确保是6位十六进制数
+      if (hex.length == 6) {
+        final color = Color(int.parse('FF$hex', radix: 16));
+        await addCustomColor(color, name.isEmpty ? '#$hex' : name);
+      } else {
+        throw FormatException('无效的十六进制颜色格式');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// 通过RGB值添加颜色
+  Future<void> addCustomColorFromRGB(int r, int g, int b, String name) async {
+    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+      throw RangeError('RGB值必须在0-255之间');
+    }
+    
+    final color = Color.fromRGBO(r, g, b, 1.0);
+    final colorName = name.isEmpty ? 'RGB($r,$g,$b)' : name;
+    await addCustomColor(color, colorName);
   }
 
   /// 删除自定义颜色
