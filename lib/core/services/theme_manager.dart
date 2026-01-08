@@ -56,7 +56,7 @@ class ThemeManager with ChangeNotifier {
 
   // 内部状态变量
   String _themeMode = 'system';
-  int _seedColor = 0x3264FF; // 默认种子颜色（蓝色）
+  int _seedColor = 0xFF6496FF; // 默认种子颜色（蓝色）
 
   /// 获取所有颜色选项（预定义 + 自定义）
   List<ColorOption> get allColors {

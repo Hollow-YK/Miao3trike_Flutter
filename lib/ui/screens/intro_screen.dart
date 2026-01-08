@@ -164,7 +164,7 @@ class IntroScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'V1.0.2',
+                          'V 1.0.3 Beta 1',
                           style: TextStyle(
                             color: darkVariant,
                             fontWeight: FontWeight.w600,
@@ -210,7 +210,7 @@ class IntroScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Miao3trikeMod V1.2',
+                          'Miao3trike Mod AAR V 1.2',
                           style: TextStyle(
                             color: darkVariant,
                             fontWeight: FontWeight.w600,
