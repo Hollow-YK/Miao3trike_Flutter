@@ -1,8 +1,8 @@
 {
   "release": {
     "version": "1.0.3",
-    "versioncode": "3",
-    "changelog": "添加自定义主题色"
+    "versioncode": "6",
+    "changelog": "添加自定义主题色和检查更新功能\n优化了一下UI\n增加了一点点方舟相关的主题色，快去试试吧！"
   },
   "beta": {
     "version": "1.0.3 Beta2",

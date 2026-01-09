@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // 本地版本常量
-const String LOCAL_VERSION = "1.0.3 Beta2";
-const String LOCAL_VERSION_CODE = "5";
+const String LOCAL_VERSION = "1.0.3";
+const String LOCAL_VERSION_CODE = "6";
 const String LOCAL_CORE_VERSION_CODE = "2";
-const bool IS_BETA = true;
+const bool IS_BETA = false;
 
 class VersionInfo {
   final String version;
