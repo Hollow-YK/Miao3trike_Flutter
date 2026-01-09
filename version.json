@@ -1,0 +1,16 @@
+{
+  "release": {
+    "version": "1.0.3",
+    "versioncode": "3",
+    "changelog": "添加自定义主题色"
+  },
+  "beta": {
+    "version": "1.0.3Beta1",
+    "versioncode": "4",
+    "changelog": "更多预定义颜色\n添加自动更新"
+  },
+  "core": {
+    "version": "Miao3trikeMore 1.0.2",
+    "versioncode": "2"
+  }
+}
