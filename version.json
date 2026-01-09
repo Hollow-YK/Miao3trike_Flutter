@@ -5,9 +5,9 @@
     "changelog": "添加自定义主题色"
   },
   "beta": {
-    "version": "1.0.3Beta1",
-    "versioncode": "4",
-    "changelog": "更多预定义颜色\n添加自动更新"
+    "version": "1.0.3 Beta2",
+    "versioncode": "5",
+    "changelog": "添加了检查更新功能\n增加了一点点方舟相关的主题色，快去试试吧！"
   },
   "core": {
     "version": "Miao3trikeMore 1.0.2",
