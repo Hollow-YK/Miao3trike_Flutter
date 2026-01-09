@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:miao3trikeflutter/core/services/app_state.dart';
 import 'package:miao3trikeflutter/core/services/theme_manager.dart';
 import 'package:miao3trikeflutter/ui/widgets/macro_settings_dialog.dart';
+import 'package:miao3trikeflutter/ui/widgets/update_check.dart';
 import 'package:miao3trikeflutter/ui/screens/theme_setting_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -286,6 +287,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         );
                       },
+                    ),
+                    const Divider(height: 1),
+                    // 添加检查更新入口
+                    ListTile(
+                      leading: Icon(
+                        Icons.update_outlined,
+                        color: darkVariant,
+                      ),
+                      title: Text(
+                        '检查更新',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '检查应用版本是否有更新',
+                        style: TextStyle(
+                          color: subtleColor,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: subtleColor,
+                      ),
+                      onTap: () => showUpdateCheckerDialog(context),
                     ),
                     /*const Divider(height: 1),
                     ListTile(

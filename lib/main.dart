@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
     final themeManager = Provider.of<ThemeManager>(context);
     
     return MaterialApp(
-      title: 'Miao3trikeMod',
+      title: 'Miao3trikeFlutter',
       theme: themeManager.generateLightTheme(themeManager.seedColor),
       darkTheme: themeManager.generateDarkTheme(themeManager.seedColor),
       themeMode: themeManager.getThemeModeFromString(themeManager.themeMode),

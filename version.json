@@ -1,0 +1,16 @@
+{
+  "release": {
+    "version": "1.0.3",
+    "versioncode": "6",
+    "changelog": "添加自定义主题色和检查更新功能\n优化了一下UI\n增加了一点点方舟相关的主题色，快去试试吧！"
+  },
+  "beta": {
+    "version": "1.0.3 Beta2",
+    "versioncode": "5",
+    "changelog": "添加了检查更新功能\n增加了一点点方舟相关的主题色，快去试试吧！"
+  },
+  "core": {
+    "version": "Miao3trikeMore 1.0.2",
+    "versioncode": "2"
+  }
+}
