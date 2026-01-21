@@ -10,15 +10,23 @@ class IntroScreen extends StatelessWidget {
     final themeManager = Provider.of<ThemeManager>(context);
     final seedColor = themeManager.seedColor;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // 根据亮度调整颜色变体
-    final lightVariant = isDark ? seedColor.withValues(alpha: 0.8) : seedColor.withValues(alpha: 0.1);
-    final mediumVariant = isDark ? seedColor.withValues(alpha: 0.6) : seedColor.withValues(alpha: 0.3);
-    final darkVariant = isDark ? seedColor.withValues(alpha: 0.9) : seedColor.withValues(alpha: 0.7);
+    final lightVariant = isDark
+        ? seedColor.withValues(alpha: 0.8)
+        : seedColor.withValues(alpha: 0.1);
+    final mediumVariant = isDark
+        ? seedColor.withValues(alpha: 0.6)
+        : seedColor.withValues(alpha: 0.3);
+    final darkVariant = isDark
+        ? seedColor.withValues(alpha: 0.9)
+        : seedColor.withValues(alpha: 0.7);
     final cardBackground = isDark ? Colors.grey[900]! : Colors.white;
     final infoBackground = isDark ? Colors.blueGrey[800]! : Colors.blue.shade50;
     final infoBorder = isDark ? Colors.blueGrey[600]! : Colors.blue.shade100;
-    final warningBackground = isDark ? Colors.blueGrey[900]! : Colors.blue.shade50;
+    final warningBackground = isDark
+        ? Colors.blueGrey[900]!
+        : Colors.blue.shade50;
     final warningBorder = isDark ? Colors.blueGrey[700]! : Colors.blue.shade100;
     final textColor = isDark ? Colors.grey[300]! : Colors.grey.shade800;
     final subtleTextColor = isDark ? Colors.grey[400]! : Colors.grey.shade600;
@@ -43,10 +51,7 @@ class IntroScreen extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          lightVariant,
-                          mediumVariant,
-                        ],
+                        colors: [lightVariant, mediumVariant],
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -86,7 +91,10 @@ class IntroScreen extends StatelessWidget {
                                   end: Alignment.bottomRight,
                                   colors: [
                                     seedColor,
-                                    Color.alphaBlend(seedColor.withOpacity(0.6), Colors.white),
+                                    Color.alphaBlend(
+                                      seedColor.withOpacity(0.6),
+                                      Colors.white,
+                                    ),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(65),
@@ -97,9 +105,9 @@ class IntroScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 64),
-                  
+
                   // 应用名称
                   Text(
                     'Miao3trikeFlutter',
@@ -110,9 +118,9 @@ class IntroScreen extends StatelessWidget {
                       letterSpacing: 0.5,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // 应用描述
                   Text(
                     '明日方舟划火柴小工具',
@@ -122,9 +130,9 @@ class IntroScreen extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 64),
-                  
+
                   // UI版本标签
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -149,11 +157,7 @@ class IntroScreen extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.verified,
-                          size: 16,
-                          color: seedColor,
-                        ),
+                        Icon(Icons.verified, size: 16, color: seedColor),
                         const SizedBox(width: 6),
                         Text(
                           'Flutter UI • ',
@@ -164,7 +168,7 @@ class IntroScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'V 1.0.3',
+                          'V 1.0.4 Beta 1',
                           style: TextStyle(
                             color: darkVariant,
                             fontWeight: FontWeight.w600,
@@ -174,9 +178,9 @@ class IntroScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Core 版本标签
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -220,9 +224,9 @@ class IntroScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // 简短介绍
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.8,
@@ -257,7 +261,8 @@ class IntroScreen extends StatelessWidget {
               context: context,
               icon: Icons.touch_app,
               title: '手势录制与回放',
-              description: '在游戏暂停状态下点击悬浮开关，开启划火柴操作录制，此时拖动干员并不会真的拖动干员，而是绘制一条拖放路径，松手后，应用会自动播放"点暂停→拖出干员→手机返回键"的宏操作，放置到位后之后需要自行调整干员朝向。\n第一次使用务必校准暂停按钮位置！（点击悬浮开关，将出现的蓝色按钮拖动到游戏中暂停按钮的真实位置，一次设置，永久生效）',
+              description:
+                  '在游戏暂停状态下点击悬浮开关，开启划火柴操作录制，此时拖动干员并不会真的拖动干员，而是绘制一条拖放路径，松手后，应用会自动播放"点暂停→拖出干员→手机返回键"的宏操作，放置到位后之后需要自行调整干员朝向。\n第一次使用务必校准暂停按钮位置！（点击悬浮开关，将出现的蓝色按钮拖动到游戏中暂停按钮的真实位置，一次设置，永久生效）',
               seedColor: seedColor,
               cardBackground: cardBackground,
             ),
@@ -268,7 +273,8 @@ class IntroScreen extends StatelessWidget {
               context: context,
               icon: Icons.timer,
               title: '精确时间控制',
-              description: '零帧撤退与放技能：在游戏暂停状态下按下手机的**音量+**按键，开启干员位置录制，此时点击干员位置，松手后，应用会自动播放"点暂停→点击干员→点暂停"的宏脚本，然后可以自己选择开干员技能或是撤退。\n逐帧步进：在游戏暂停状态下按下手机的"音量-"按键，应用会自动播放"点暂停→等待→点暂停"的宏脚本，通过调整等待时间（"步进延迟"），可以以人类难以精确捕捉的时间逐帧步进游戏内时间，方便精细操作。',
+              description:
+                  '零帧撤退与放技能：在游戏暂停状态下按下手机的**音量+**按键，开启干员位置录制，此时点击干员位置，松手后，应用会自动播放"点暂停→点击干员→点暂停"的宏脚本，然后可以自己选择开干员技能或是撤退。\n逐帧步进：在游戏暂停状态下按下手机的"音量-"按键，应用会自动播放"点暂停→等待→点暂停"的宏脚本，通过调整等待时间（"步进延迟"），可以以人类难以精确捕捉的时间逐帧步进游戏内时间，方便精细操作。',
               seedColor: seedColor,
               cardBackground: cardBackground,
             ),
@@ -301,7 +307,8 @@ class IntroScreen extends StatelessWidget {
               context: context,
               icon: Icons.settings,
               title: '高度可配置',
-              description: '支持毫秒级延迟设置，可调整启动延迟、步骤延迟、拖动时长等参数，适应不同设备需求。\n提供详细的配置选项，包括宏设置、功能开关、权限管理等，满足个性化需求。',
+              description:
+                  '支持毫秒级延迟设置，可调整启动延迟、步骤延迟、拖动时长等参数，适应不同设备需求。\n提供详细的配置选项，包括宏设置、功能开关、权限管理等，满足个性化需求。',
               seedColor: seedColor,
               cardBackground: cardBackground,
             ),
@@ -510,10 +517,7 @@ class IntroScreen extends StatelessWidget {
             ),
             child: Text(
               number,
-              style: TextStyle(
-                color: seedColor,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: seedColor, fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(width: 12),

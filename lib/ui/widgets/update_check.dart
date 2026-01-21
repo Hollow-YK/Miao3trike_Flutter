@@ -1,14 +1,16 @@
+// miao3trikeflutter/ui/widgets/update_check.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:miao3trikeflutter/core/services/update_manager.dart';
 
 // 本地版本常量
-const String LOCAL_VERSION = "1.0.3";
-const String LOCAL_VERSION_CODE = "6";
+const String LOCAL_VERSION = "1.0.4 Beta1";
+const String LOCAL_VERSION_CODE = "7";
 const String LOCAL_CORE_VERSION_CODE = "2";
-const bool IS_BETA = false;
+const bool IS_BETA = true;
 
 class VersionInfo {
   final String version;
@@ -67,10 +69,21 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
   String? _error;
   HttpClient? _httpClient;
   bool _isDisposed = false;
+  late UpdateManager _updateManager;
+  String _currentChannel = 'github';
+  bool _useMirror = false;
 
   @override
   void initState() {
     super.initState();
+    _initializeUpdateManager();
+  }
+
+  Future<void> _initializeUpdateManager() async {
+    _updateManager = UpdateManager();
+    await _updateManager.init();
+    _currentChannel = _updateManager.updateChannel;
+    _useMirror = _updateManager.useMirror;
     _checkForUpdates();
   }
 
@@ -94,28 +107,33 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
     });
 
     try {
+      // 根据设置获取正确的URL
+      final url = _updateManager.getVersionCheckUrl(isBeta: IS_BETA);
+
+      debugPrint('检查更新URL: $url');
+      debugPrint('当前渠道: $_currentChannel, 使用镜像: $_useMirror');
+
       _httpClient = HttpClient();
       // 设置连接超时和空闲超时
       _httpClient!.connectionTimeout = const Duration(seconds: 10);
-      
-      final request = await _httpClient!.getUrl(
-        IS_BETA ? Uri.parse('https://raw.githubusercontent.com/Hollow-YK/Miao3trike_Flutter/Dev/version.json')
-                 : Uri.parse('https://raw.githubusercontent.com/Hollow-YK/Miao3trike_Flutter/main/version.json'),
-      );
-      
+
+      final request = await _httpClient!.getUrl(Uri.parse(url));
+
       // 使用 Future.timeout 包装整个请求
-      final response = await request.close().timeout(const Duration(seconds: 15));
-      
+      final response = await request.close().timeout(
+        const Duration(seconds: 15),
+      );
+
       // 再次检查是否还挂载
       if (!mounted || _isDisposed) return;
-      
+
       if (response.statusCode == 200) {
         final content = await response.transform(utf8.decoder).join();
         final jsonData = json.decode(content);
-        
+
         // 检查是否还挂载
         if (!mounted || _isDisposed) return;
-        
+
         setState(() {
           _remoteData = RemoteVersionData.fromJson(jsonData);
           _isLoading = false;
@@ -123,7 +141,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
       } else {
         // 检查是否还挂载
         if (!mounted || _isDisposed) return;
-        
+
         setState(() {
           _error = '获取版本信息失败: ${response.statusCode}';
           _isLoading = false;
@@ -132,7 +150,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
     } on SocketException catch (e) {
       // 网络连接错误
       if (!mounted || _isDisposed) return;
-      
+
       setState(() {
         _error = '网络连接失败: ${e.message}';
         _isLoading = false;
@@ -140,7 +158,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
     } on HttpException catch (e) {
       // HTTP错误
       if (!mounted || _isDisposed) return;
-      
+
       setState(() {
         _error = 'HTTP请求失败: ${e.message}';
         _isLoading = false;
@@ -148,7 +166,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
     } on FormatException catch (e) {
       // JSON解析错误
       if (!mounted || _isDisposed) return;
-      
+
       setState(() {
         _error = '数据格式错误: ${e.message}';
         _isLoading = false;
@@ -156,7 +174,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
     } on TimeoutException catch (_) {
       // 超时错误
       if (!mounted || _isDisposed) return;
-      
+
       setState(() {
         _error = '请求超时，请检查网络连接';
         _isLoading = false;
@@ -164,7 +182,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
     } catch (e) {
       // 其他错误
       if (!mounted || _isDisposed) return;
-      
+
       setState(() {
         _error = '发生未知错误: $e';
         _isLoading = false;
@@ -175,19 +193,25 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
     }
   }
 
-  void _openGitHubRelease() async {
-    const url = 'https://github.com/Hollow-YK/Miao3trike_Flutter/releases';
+  Future<void> _openReleasePage() async {
+    final url = _currentChannel == 'gitee'
+        ? 'https://gitee.com/Hollow-YK/Miao3trike_Flutter/releases'
+        : _updateManager.getGitHubReleaseUrl();
+
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
+    } else {
+      debugPrint('无法打开URL: $url');
     }
   }
 
   String _getReleaseStatus() {
     if (_remoteData == null) return '';
-    
+
     final localCode = int.tryParse(LOCAL_VERSION_CODE) ?? 0;
-    final remoteReleaseCode = int.tryParse(_remoteData!.release.versionCode) ?? 0;
-    
+    final remoteReleaseCode =
+        int.tryParse(_remoteData!.release.versionCode) ?? 0;
+
     if (localCode < remoteReleaseCode) {
       return 'new_version';
     } else if (localCode == remoteReleaseCode) {
@@ -199,11 +223,12 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
 
   String _getBetaStatus() {
     if (_remoteData == null || !IS_BETA) return '';
-    
+
     final localCode = int.tryParse(LOCAL_VERSION_CODE) ?? 0;
-    final remoteReleaseCode = int.tryParse(_remoteData!.release.versionCode) ?? 0;
+    final remoteReleaseCode =
+        int.tryParse(_remoteData!.release.versionCode) ?? 0;
     final remoteBetaCode = int.tryParse(_remoteData!.beta.versionCode) ?? 0;
-    
+
     if (remoteBetaCode <= remoteReleaseCode) {
       return 'no_newer_beta';
     } else if (localCode < remoteBetaCode) {
@@ -217,10 +242,10 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
 
   Widget _buildCoreUpdateWarning() {
     if (_remoteData == null) return const SizedBox();
-    
+
     final localCoreCode = int.tryParse(LOCAL_CORE_VERSION_CODE) ?? 0;
     final remoteCoreCode = int.tryParse(_remoteData!.core.versionCode) ?? 0;
-    
+
     if (localCoreCode < remoteCoreCode) {
       return Container(
         padding: const EdgeInsets.all(8),
@@ -251,22 +276,24 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
 
   Widget _buildReleaseSection() {
     final status = _getReleaseStatus();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           '正式版：',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         if (status == 'new_version' && _remoteData != null)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('有新版本：${_remoteData!.release.version}(${_remoteData!.release.versionCode})'),
+              Text(
+                '有新版本：${_remoteData!.release.version}(${_remoteData!.release.versionCode})',
+              ),
               const SizedBox(height: 8),
               Text(
                 '更新日志：',
@@ -297,25 +324,27 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
 
   Widget _buildBetaSection() {
     if (!IS_BETA) return const SizedBox();
-    
+
     final status = _getBetaStatus();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
         Text(
           '测试版：',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         if (status == 'new_beta' && _remoteData != null)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('有新版本：${_remoteData!.beta.version}(${_remoteData!.beta.versionCode})'),
+              Text(
+                '有新版本：${_remoteData!.beta.version}(${_remoteData!.beta.versionCode})',
+              ),
               const SizedBox(height: 8),
               Text(
                 '更新日志：',
@@ -332,10 +361,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
             ],
           )
         else if (status == 'no_newer_beta')
-          Text(
-            '当前没有比正式版更新的测试版！',
-            style: TextStyle(color: Colors.blue[700]),
-          )
+          Text('当前没有比正式版更新的测试版！', style: TextStyle(color: Colors.blue[700]))
         else if (status == 'latest_beta')
           Text('当前是最新版！', style: TextStyle(color: Colors.green[700]))
         else if (status == 'custom_build')
@@ -356,12 +382,52 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
             // 当前版本信息
             Text(
               '当前版本：$LOCAL_VERSION ($LOCAL_VERSION_CODE) Core $LOCAL_CORE_VERSION_CODE',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+
+            // 渠道信息
+            Container(
+              margin: const EdgeInsets.only(top: 8, bottom: 16),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).colorScheme.surfaceContainerHighest.withAlpha(25),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _currentChannel == 'github' ? Icons.code : Icons.speed,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '当前渠道：$_currentChannel',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  if (_currentChannel == 'github' && _useMirror)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        '（使用镜像）',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            
+
             if (_isLoading)
               const Center(
                 child: Padding(
@@ -373,10 +439,7 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '错误：$_error',
-                    style: const TextStyle(color: Colors.red),
-                  ),
+                  Text('错误：$_error', style: const TextStyle(color: Colors.red)),
                   const SizedBox(height: 8),
                   ElevatedButton.icon(
                     onPressed: _checkForUpdates,
@@ -388,10 +451,10 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
             else if (_remoteData != null) ...[
               // 核心版本更新警告
               _buildCoreUpdateWarning(),
-              
+
               // 正式版信息
               _buildReleaseSection(),
-              
+
               // 测试版信息（如果是测试版）
               _buildBetaSection(),
             ],
@@ -405,12 +468,16 @@ class _UpdateCheckerDialogState extends State<UpdateCheckerDialog> {
           },
           child: const Text('关闭'),
         ),
-        if (_remoteData != null && 
-            (_getReleaseStatus() == 'new_version' || 
-             _getBetaStatus() == 'new_beta'))
+        if (_remoteData != null &&
+            (_getReleaseStatus() == 'new_version' ||
+                _getBetaStatus() == 'new_beta'))
           ElevatedButton(
-            onPressed: _openGitHubRelease,
-            child: const Text('前往GitHub Release'),
+            onPressed: _openReleasePage,
+            child: Text(
+              _currentChannel == 'github'
+                  ? '前往GitHub Release'
+                  : '前往Gitee Release',
+            ),
           ),
       ],
     );
