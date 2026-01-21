@@ -5,9 +5,9 @@
     "changelog": "添加自定义主题色和检查更新功能\n优化了一下UI\n增加了一点点方舟相关的主题色，快去试试吧！"
   },
   "beta": {
-    "version": "1.0.4 Beta1",
-    "versioncode": "7",
-    "changelog": "为检查更新功能添加了Gitee渠道，并且增加了配置镜像功能，快去试试吧！"
+    "version": "1.0.4 Beta2",
+    "versioncode": "8",
+    "changelog": "紧急修复了只有debug时才能正常检查更新的bug，我一直都忘了声明网络权限QAQ\n上一个版本：为检查更新功能添加了Gitee渠道，并且增加了配置镜像功能，快去试试吧！"
   },
   "core": {
     "version": "Miao3trikeMore 1.0.2",

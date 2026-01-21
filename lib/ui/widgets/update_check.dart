@@ -7,8 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:miao3trikeflutter/core/services/update_manager.dart';
 
 // 本地版本常量
-const String LOCAL_VERSION = "1.0.4 Beta1";
-const String LOCAL_VERSION_CODE = "7";
+const String LOCAL_VERSION = "1.0.4 Beta2";
+const String LOCAL_VERSION_CODE = "8";
 const String LOCAL_CORE_VERSION_CODE = "2";
 const bool IS_BETA = true;
 
